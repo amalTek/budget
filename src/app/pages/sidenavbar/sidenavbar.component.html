@@ -1,0 +1,41 @@
+<div class="sidebar">
+  <div class="side-header">
+    <h1>MyBudget</h1>
+    <!-- <p>Overview</p> -->
+  </div>
+
+  <!-- Optional checkboxes for controlling the slide -->
+  <input type="radio" name="nav" id="0" class="checkbox" checked>
+  <input type="radio" name="nav" id="1" class="checkbox">
+  <input type="radio" name="nav" id="2" class="checkbox">
+  <input type="radio" name="nav" id="3" class="checkbox">
+  <input type="radio" name="nav" id="4" class="checkbox">
+
+  <div class="sidenav">
+    <label class="nav-link" for="0">
+      <a routerLink="/dashboard" routerLinkActive="active" (click)="redirect()">
+        <i class="material-icons"></i>Dashboard
+      </a>
+    </label>
+    
+    <label class="nav-link" for="1">
+      <a routerLink="/expenses" routerLinkActive="active" (click)="redirectToExpense()">
+        <i class="material-icons"></i> Expenses
+      </a>
+    </label>
+    <label class="nav-link" for="2">
+      <a routerLink="/invoicing" routerLinkActive="active">
+        <i class="material-icons"></i> Invoicing
+      </a>
+    </label>
+
+    <label class="nav-link" for="3">
+      <a routerLink="/settings" routerLinkActive="active">
+        <i class="material-icons"></i> Settings
+      </a>
+    </label>
+
+    <!-- The animated slide background -->
+    <div class="slide"></div>
+  </div>
+</div>

@@ -1,0 +1,18 @@
+.app-container {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .content {
+    flex: 1;
+    overflow: auto;
+    padding: 20px;
+  }
+  
+  /* .sidebar {
+    width: max(250px, 20vw);
+    background: rgb(128, 189, 192);
+    height: 100vh;
+    position: sticky;
+    top: 0;
+  } */
