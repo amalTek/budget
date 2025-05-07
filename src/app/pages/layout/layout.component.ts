@@ -8,7 +8,7 @@ import { ExpensesComponent } from '../expenses/expenses.component';
 @Component({
   selector: 'app-layout',
   standalone: true,  
-  imports: [RouterOutlet,SidenavbarComponent,DashboardComponent,ExpensesComponent],
+  imports: [RouterOutlet,SidenavbarComponent],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css'
 })

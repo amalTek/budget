@@ -19,10 +19,11 @@ export const routes: Routes = [
     path: '',
     component: LayoutComponent,
     children: [
-      // { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+
       { path: 'dashboard', component: DashboardComponent },
-      { path: 'invoicing', component: InvoicingComponent },
       { path: 'expenses', component: ExpensesComponent },
+      { path: 'invoicing', component: InvoicingComponent }
     ]
+
   }
 ];

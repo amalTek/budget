@@ -1,1 +1,22 @@
-<p>expenses works!</p>
+<div class="table-container">
+    <div class="grid-header">
+      <div *ngFor="let col of columns" class="header-cell">{{col.header}}</div>
+      <div class="header-cell">Actions</div>
+    </div>
+  
+    <div class="grid-body">
+      <div class="grid-row" *ngFor="let row of data">
+        <div *ngFor="let col of columns" class="grid-cell">
+          {{row[col.field]}}
+        </div>
+        <div class="grid-cell actions">
+          <button (click)="editRow(row)" class="btn-edit">
+            <i class="material-icons">edit</i>
+          </button>
+          <button (click)="deleteRow(row)" class="btn-delete">
+            <i class="material-icons">delete</i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>

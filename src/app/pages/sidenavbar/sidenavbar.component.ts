@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'app-sidenavbar',
-  imports: [],
+  imports: [RouterLink, RouterLinkActive],
   templateUrl: './sidenavbar.component.html',
   styleUrl: './sidenavbar.component.css'
 })
@@ -17,13 +17,5 @@ export class SidenavbarComponent {
     
   }
 
-redirect(){
-  this.router.navigate(['/dashboard']);
 
-}
-
-redirectToExpense(){
-  this.router.navigate(['/expenses']);
-
-}
 }

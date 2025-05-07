@@ -16,7 +16,7 @@ body{
 }
 .wrapper{
   width: 420px;
-  background: rgba(116, 148, 216, 0.5);
+  background: rgba(117, 156, 240, 0.5);
     border:2px solid rgba(71, 82, 211, 0.2);
   backdrop-filter: blur(20px);
   box-shadow: 0 0 10px rgba(0, 0, 0, .2);
