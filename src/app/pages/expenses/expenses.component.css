@@ -1,102 +1,25 @@
 .table-container {
+    max-width: 850px;       /* slightly bigger */
+    margin: 120px auto 0;    /* move it further down from the top */
+    padding: 16px;
+    overflow-x: auto;
+  }
+  
+  table.mat-table {
     width: 100%;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    table-layout: fixed;
   }
   
-  .grid-header {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    background-color: #f8f9fa;
-    font-weight: bold;
-    border-bottom: 2px solid #dee2e6;
-  }
-  
-  .header-cell {
-    padding: 12px 15px;
+  th.mat-header-cell, td.mat-cell {
+    padding: 12px;
     text-align: left;
+    word-wrap: break-word;
   }
   
-  .grid-body {
-    display: flex;
-    flex-direction: column;
+  /* Narrow actions column */
+  th.mat-header-cell:last-child,
+  td.mat-cell:last-child {
+    width: 120px;
+    text-align: center;
   }
   
-  .grid-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    border-bottom: 1px solid #eee;
-    transition: background-color 0.2s;
-  }
-  
-  .grid-row:hover {
-    background-color: #f5f5f5;
-  }
-  
-  .grid-cell {
-    padding: 12px 15px;
-    align-self: center;
-  }
-  
-  .actions {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .btn-edit, .btn-delete {
-    border: none;
-    background: none;
-    cursor: pointer;
-    padding: 5px;
-    border-radius: 4px;
-    transition: all 0.2s;
-  }
-  
-  .btn-edit {
-    color: #007bff;
-  }
-  
-  .btn-edit:hover {
-    background-color: rgba(0, 123, 255, 0.1);
-  }
-  
-  .btn-delete {
-    color: #dc3545;
-  }
-  
-  .btn-delete:hover {
-    background-color: rgba(220, 53, 69, 0.1);
-  }
-  
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .grid-header {
-      display: none;
-    }
-    
-    .grid-row {
-      grid-template-columns: 1fr;
-      border-bottom: 2px solid #ddd;
-      margin-bottom: 15px;
-      padding: 10px;
-    }
-    
-    .grid-cell {
-      padding: 8px 0;
-      display: flex;
-    }
-    
-    .grid-cell::before {
-      content: attr(data-label);
-      font-weight: bold;
-      width: 120px;
-      min-width: 120px;
-    }
-    
-    .actions {
-      justify-content: flex-start;
-      padding-top: 10px;
-    }
-  }

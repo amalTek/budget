@@ -1,22 +1,40 @@
 <div class="table-container">
-    <div class="grid-header">
-      <div *ngFor="let col of columns" class="header-cell">{{col.header}}</div>
-      <div class="header-cell">Actions</div>
-    </div>
-  
-    <div class="grid-body">
-      <div class="grid-row" *ngFor="let row of data">
-        <div *ngFor="let col of columns" class="grid-cell">
-          {{row[col.field]}}
-        </div>
-        <div class="grid-cell actions">
-          <button (click)="editRow(row)" class="btn-edit">
-            <i class="material-icons">edit</i>
-          </button>
-          <button (click)="deleteRow(row)" class="btn-delete">
-            <i class="material-icons">delete</i>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="date">
+      <th mat-header-cell *matHeaderCellDef> Date </th>
+      <td mat-cell *matCellDef="let element"> {{element.date}} </td>
+    </ng-container>
+
+    <!-- Age Column -->
+    <ng-container matColumnDef="category">
+      <th mat-header-cell *matHeaderCellDef> Category </th>
+      <td mat-cell *matCellDef="let element"> {{element.category}} </td>
+    </ng-container>
+    <ng-container matColumnDef="description">
+      <th mat-header-cell *matHeaderCellDef> description </th>
+      <td mat-cell *matCellDef="let element"> {{element.description}} </td>
+    </ng-container>
+    <ng-container matColumnDef="amount">
+      <th mat-header-cell *matHeaderCellDef> Amount </th>
+      <td mat-cell *matCellDef="let element"> {{element.amount}} </td>
+    </ng-container>
+
+    <!-- Actions Column -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef> Actions </th>
+      <td mat-cell *matCellDef="let element">
+        <button mat-icon-button color="primary" (click)="editItem(element)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="deleteItem(element)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>

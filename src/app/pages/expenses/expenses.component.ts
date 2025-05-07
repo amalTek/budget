@@ -1,36 +1,43 @@
 import { Component } from '@angular/core';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { ExpenseService } from '../../services/expense.service';
 
 @Component({
+  standalone: true,
   selector: 'app-expenses',
-  imports: [],
+  imports: [MatTableModule, MatButtonModule, MatIconModule],
   templateUrl: './expenses.component.html',
-  styleUrl: './expenses.component.css'
+  styleUrls: ['./expenses.component.css']
 })
 export class ExpensesComponent {
-  columns: any[] = [
-    { header: 'ID', field: 'id' },
-    { header: 'Name', field: 'name' },
-    { header: 'Email', field: 'email' },
-    { header: 'Role', field: 'role' }
+  constructor(
+    private expenseService: ExpenseService,
+    
+  ) {}
+  displayedColumns: string[] = ['date', 'category', 'description','amount','actions'];
+
+  dataSource = [
+   
   ];
 
-  data = [
-    { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin' },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'User' },
-    // Add more data as needed
-  ];
+ngOnInit(){
+  this.expenseService.loadExpenseData() .subscribe(
+    response => {
+      this.dataSource =response
+  
+    });
+   
+}
 
-  editRow(row: any) {
-    // Implement edit logic
-    console.log('Editing row:', row);
-    // You can open a modal or navigate to edit page
+  editItem(element: any) {
+    console.log('Edit:', element);
+    // You can add logic here to open a dialog or inline form for editing
   }
 
-  deleteRow(row: any) {
-    // Implement delete logic
-    if (confirm('Are you sure you want to delete this record?')) {
-      this.data = this.data.filter(item => item.id !== row.id);
-    }
+  deleteItem(element: any) {
+    // console.log('Delete:', element);
+    // this.dataSource = this.dataSource.filter(item => item.id !== element.id);
   }
-
 }
