@@ -1,27 +1,44 @@
-<!-- dashboard.component.html -->
-<div class="dashboard-container">
-  <div class="pricing-container">
-    <div class="pricing-card featured">
-      <h3>Advanced iOS</h3>
-      <p class="price">$199.99</p>
-      <ul>
-        <li>Advanced Swift Concepts</li>
-        <li>Complex UI Design</li>
-        <li>6-Month Access</li>
-        <li>Access to Weekly Webinars</li>
-      </ul>
-      <button class="btn">Choose Advanced iOS</button>
-    </div>
-    <div class="pricing-card featured">
-      <h3>Advanced Android</h3>
-      <p class="price">$199.99</p>
-      <ul>
-        <li>Advanced Kotlin Concepts</li>
-        <li>Complex UI Design</li>
-        <li>6-Month Access</li>
-        <li>Access to Weekly Webinars</li>
-      </ul>
-      <button class="btn">Choose Advanced Android</button>
-    </div>
-  </div>
+<div class="card-container">
+  <!-- Monthly Expenses Card -->
+  <mat-card class="expense-card">
+    <mat-card-header>
+      <mat-card-title>Monthly Expenses</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p>Total: </p>
+      <mat-icon>account_balance_wallet</mat-icon>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Income Card -->
+  <mat-card class="income-card">
+    <mat-card-header>
+      <mat-card-title>Income</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p>Total: </p>
+      <mat-icon>attach_money</mat-icon>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Invoicing Card -->
+  <!-- <mat-card class="invoicing-card">
+    <mat-card-header>
+      <mat-card-title>Invoicing</mat-card-title>
+    </mat-card-header>
+    <mat-card-content> {{pendingInvoices}}</p>
+      <mat-icon>receipt</mat-icon>
+    </mat-card-content>
+  </mat-card> -->
+
+  <!-- Another Category Card -->
+  <mat-card class="other-card">
+    <mat-card-header>
+      <mat-card-title>Other</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p>Some additional data</p>
+      <mat-icon>check_circle</mat-icon>
+    </mat-card-content>
+  </mat-card>
 </div>

@@ -22,4 +22,10 @@
     width: 120px;
     text-align: center;
   }
+  .edit-button {
+    color: green;
+  }
   
+  .delete-button {
+    color: red;
+  }
