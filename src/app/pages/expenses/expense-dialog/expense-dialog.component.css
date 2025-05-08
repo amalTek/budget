@@ -1,0 +1,32 @@
+.dialog-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .full-width {
+    width: 100%;
+  }
+  
+  .dialog-title {
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  
+  mat-dialog-actions {
+    margin-top: 20px;
+  }
+  
+  button {
+    min-width: 100px;
+  }
+  .dialog-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+  }
+  
+  .close-button {
+    margin: -8px;
+  }

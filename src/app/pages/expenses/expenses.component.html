@@ -1,6 +1,5 @@
-<button mat-raised-button color="primary" >
-  <mat-icon>add</mat-icon> Add Expense
-</button>
+<button mat-flat-button color="primary" (click)="openDialog()">Open Expense Details</button>
+
 
 <div class="table-container">
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
