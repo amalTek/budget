@@ -1,44 +1,67 @@
-<div class="card-container">
-  <!-- Monthly Expenses Card -->
-  <mat-card class="expense-card">
-    <mat-card-header>
-      <mat-card-title>Monthly Expenses</mat-card-title>
-    </mat-card-header>
+<!-- Month Picker Field -->
+<div class="toolbar">
+  <div class="month-picker-wrapper">
+    <mat-form-field appearance="outline" class="month-picker-field">
+      <mat-label>Sélectionner un mois</mat-label>
+      <input
+        matInput
+        [matDatepicker]="picker"
+        [(ngModel)]="selectedMonth"  
+        [value]="formattedMonth"
+        readonly
+        (click)="picker.open()">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker
+        #picker
+        startView="year"
+        (monthSelected)="chooseMonth($event, picker)"
+        panelClass="month-only-picker"
+      ></mat-datepicker>
+    </mat-form-field>
+  </div>
+</div>
+
+<!-- Financial Summary Cards -->
+<div *ngFor="let summary of financialSummary" class="card-container">
+  <mat-card class="summary-card income-card">
+    <div class="card-header">
+      <mat-icon class="icon">account_balance_wallet</mat-icon>
+      <span class="card-title">Solde</span>
+    </div>
     <mat-card-content>
-      <p>Total: </p>
-      <mat-icon>account_balance_wallet</mat-icon>
+      <h2>{{ summary.currentBalance }} DT</h2>
     </mat-card-content>
   </mat-card>
 
-  <!-- Income Card -->
-  <mat-card class="income-card">
-    <mat-card-header>
-      <mat-card-title>Income</mat-card-title>
-    </mat-card-header>
+  <mat-card class="summary-card invoicing-card">
+    <div class="card-header">
+      <mat-icon class="icon">request_quote</mat-icon>
+      <span class="card-title">Facturation</span>
+    </div>
     <mat-card-content>
-      <p>Total: </p>
-      <mat-icon>attach_money</mat-icon>
+      <h2>{{ summary.totalInvoicing }} DT</h2>
     </mat-card-content>
   </mat-card>
 
-  <!-- Invoicing Card -->
-  <!-- <mat-card class="invoicing-card">
-    <mat-card-header>
-      <mat-card-title>Invoicing</mat-card-title>
-    </mat-card-header>
-    <mat-card-content> {{pendingInvoices}}</p>
-      <mat-icon>receipt</mat-icon>
-    </mat-card-content>
-  </mat-card> -->
-
-  <!-- Another Category Card -->
-  <mat-card class="other-card">
-    <mat-card-header>
-      <mat-card-title>Other</mat-card-title>
-    </mat-card-header>
+  <mat-card class="summary-card expense-card">
+    <div class="card-header">
+      <mat-icon class="icon">trending_down</mat-icon>
+      <span class="card-title">Dépenses</span>
+    </div>
     <mat-card-content>
-      <p>Some additional data</p>
-      <mat-icon>check_circle</mat-icon>
+      <h2>{{ summary.totalExpenses }} DT</h2>
     </mat-card-content>
   </mat-card>
 </div>
+<!-- Add this below your cards section -->
+<mat-card class="chart-card">
+  <mat-card-header>
+    <mat-card-title>Répartition Financière</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <app-financial-pie-chart 
+  
+      [financialData]="currentChartData">
+    </app-financial-pie-chart>
+  </mat-card-content>
+</mat-card>

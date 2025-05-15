@@ -1,41 +1,85 @@
 import { Component } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { ChartOptions } from 'chart.js';
 import { FinancialService } from '../../services/financial.service';
 import { CommonModule } from '@angular/common';
-// import { ChartsModule } from 'ng2-charts';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { FormsModule } from '@angular/forms';
+import { FinancialPieChartComponent } from '../financial-pie-chart/financial-pie-chart.component';
+
 @Component({
-  standalone:true,
+  standalone: true,
   selector: 'app-dashboard',
-  imports: [MatCardModule,MatIconModule ,CommonModule],
+  imports: [
+    MatCardModule,
+    MatIconModule,
+    CommonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatNativeDateModule,
+    MatDatepickerModule,
+    FormsModule,FinancialPieChartComponent
+  ],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css'
+  styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent {
-  constructor(private financialService:FinancialService ){}
-  public financialSummary:any[]=[];
-ngOnInit(){
-this.loadData();
-}
-  loadData() {
-    this.financialService.loadDashboardData().subscribe(
-      response => {
-        console.log("testtt",response)
-        this.financialSummary = response
+  constructor(private financialService: FinancialService) {}
 
-      });
+  currentChartData: any;
 
+ 
+
+  public financialSummary: any[] = [];
+  public selectedMonth: Date = new Date(); // Initialize with current date
+
+  ngOnInit() {
+    this.loadData();
   }
-  public pieChartLabels: string[] = ['Category A', 'Category B', 'Category C']; // Labels as an array of strings
-  public pieChartData: number[] = [120, 150, 180]; // Chart data
-  public pieChartType: string = 'pie'; // Chart type
-  public pieChartOptions: ChartOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
+
+  // Format the month for display
+  get formattedMonth(): string {
+    return this.selectedMonth.toLocaleDateString('fr-FR', {
+      year: 'numeric',
+      month: 'long'
+    });
+  }
+
+  // Handle month selection
+  chooseMonth(normalizedMonth: Date, datepicker: any): void {
+    this.selectedMonth = new Date(
+      normalizedMonth.getFullYear(),
+      normalizedMonth.getMonth(),
+      1
+    );
+    datepicker.close();
+    this.loadData(); // Reload data when month changes
+  }
+
+  loadData() {
+    const year = this.selectedMonth.getFullYear();
+    const month = this.selectedMonth.getMonth();
+    
+    this.financialService.loadDashboardData(year, month).subscribe({
+      next: (response) => {
+        this.financialSummary = response;
+        
+        if (response && response.length > 0) {
+          this.currentChartData = response[0];
+        } else {
+          this.currentChartData = {
+            totalInvoicing: 0,
+            totalExpenses: 0,
+            currentBalance: 0
+          };
+        }
       },
-    },
-  };
+      error: (err) => {
+        console.error('Failed to load financial data:', err);
+      }
+    });
+  }
 }
