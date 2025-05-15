@@ -4,6 +4,7 @@ import { LayoutComponent } from './pages/layout/layout.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { InvoicingComponent } from './pages/invoicing/invoicing.component';
 import { ExpensesComponent } from './pages/expenses/expenses.component';
+import { authGuard } from './Guard/authGuard';
 
 export const routes: Routes = [
   {
@@ -20,7 +21,7 @@ export const routes: Routes = [
     component: LayoutComponent,
     children: [
 
-      { path: 'dashboard', component: DashboardComponent },
+      { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard]  },
       { path: 'expenses', component: ExpensesComponent },
       { path: 'invoicing', component: InvoicingComponent }
     ]

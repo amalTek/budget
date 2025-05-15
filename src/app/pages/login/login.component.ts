@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthService } from '../../services/authService.service';
 
 @Component({
   selector: 'app-login',
@@ -16,7 +17,7 @@ export class LoginComponent {
   public isLogingMode :boolean =true;
   constructor(
     private userService: UserService,
-    private router: Router,private builder: FormBuilder,private snackBar: MatSnackBar
+    private router: Router,private builder: FormBuilder,private snackBar: MatSnackBar, private authService: AuthService,
   ) {this.formulaireForm = this.builder.group({})}
   public formulaireForm: FormGroup;
   public fieldArray :any[]=[];
@@ -32,27 +33,31 @@ export class LoginComponent {
 
 
   onLogin() {
-    const val = this.formulaireForm.value;
-    this.router.navigate(['/dashboard']);
-
    
 
-    this.userService.registerUser(val
-    ).subscribe({
+    const { email, password } = this.formulaireForm.value;
+  
+  
+    this.authService.login(email!, password!).subscribe({
       next: (response) => {
-        localStorage.setItem('authToken', response);
-        this.router.navigate(['/dashboard']);
+        console.log('Login successful, token received');
+        this.router.navigate(['/dashboard'])
+          .then(() => console.log('Navigation successful'))
+          .catch(err => console.error('Navigation error:', err));
       },
       error: (err) => {
-        this.snackBar.open('⚠️ Error occurred while saving user.', 'Close', {
-          duration: 4000,
-          panelClass: ['warn-snackbar'],
-          verticalPosition: 'top',
-          horizontalPosition: 'center',
-        });
-      }
-    });
-  }
+            this.snackBar.open('⚠️ Error occurred while saving user.', 'Close', {
+              duration: 4000,
+              panelClass: ['warn-snackbar'],
+              verticalPosition: 'top',
+              horizontalPosition: 'center',
+            });
+   
+    
+  }})
+}
+
+
   redirectToSignUpPage(){
     this.isLogingMode = !this.isLogingMode
     this.formulaireForm.reset();

@@ -1,6 +1,6 @@
 <div class="sidebar">
   <div class="side-header">
-   <h1>MyBudget</h1>
+    <h1>MyBudget</h1>
   </div>
 
   <div class="sidenav">
@@ -17,7 +17,14 @@
     </a>
     
     <a class="nav-link" routerLink="/settings" routerLinkActive="active">
-      <i class="material-icons"></i> Settings
+      <i class="material-icons">settings</i> Settings
     </a>
+    
+    <!-- Add this logout button at the bottom -->
+    <div class="logout-container">
+      <a class="nav-link logout-btn" (click)="logout()">
+        <i class="material-icons">logout</i> Logout
+      </a>
+    </div>
   </div>
 </div>
