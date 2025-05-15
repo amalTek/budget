@@ -6,8 +6,8 @@ html, body {
 }
 
 .sidebar {
-  width: max(250px, 20vw);
-  background: rgb(105, 169, 172);
+  width: max(260px, 20vw);
+  background: rgb(27, 146, 111);
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -17,7 +17,7 @@ html, body {
   margin: 0 auto;
   padding: 1em 4em 1em 0em;
   width: max-content;
-  background-image: url("/assets/budget.png");
+  background-image: url("/assets/maliha.png");
   background-repeat: no-repeat;
   background-position: right center;
   background-size: auto 90%;
@@ -57,7 +57,7 @@ html, body {
   text-decoration: none;
   font-size: 20px;
   font-weight: 600;
-
+  font-family: Arial, sans-serif; /* Set font to Arial */
   cursor: pointer;
 }
 

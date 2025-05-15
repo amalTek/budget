@@ -5,12 +5,19 @@ import { MatIconModule } from '@angular/material/icon';
 import { ExpenseService } from '../../services/expense.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ExpenseDialogComponent } from './expense-dialog/expense-dialog.component';
+import { ExpenseEditComponentTsComponent } from './expense-edit.component.ts/expense-edit.component.ts.component';
 
 @Component({
   standalone: true,
   selector: 'app-expenses',
-  imports: [MatTableModule, MatButtonModule, MatIconModule, ExpenseDialogComponent, MatDialogModule,],
-  templateUrl: './expenses.component.html',
+  imports: [
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    ExpenseDialogComponent,
+    MatDialogModule,
+    ExpenseDialogComponent
+  ] , templateUrl: './expenses.component.html',
   styleUrls: ['./expenses.component.css']
 })
 export class ExpensesComponent {
@@ -20,7 +27,7 @@ export class ExpensesComponent {
   ) { }
   displayedColumns: string[] = ['date', 'category', 'description', 'amount', 'status', 'actions'];
 
-  dataSource = [
+  dataSource:any[] = [
 
   ];
 
@@ -36,6 +43,11 @@ export class ExpensesComponent {
 
   }
 
+  getTotalAmount(): number {
+    return this.dataSource?.map(item => item.amount) ?.reduce((acc, value) => acc + value, 0) || 0;
+     
+     
+  }
   editItem(element: any) {
     console.log('Edit:', element);
     // You can add logic here to open a dialog or inline form for editing
@@ -54,6 +66,19 @@ export class ExpensesComponent {
     });
   }
 
+  openEditExpense(element: any): void {
+    const dialogRef = this.dialog.open(ExpenseEditComponentTsComponent, {
+      width: '400px',
+      data: element // Pass the selected row
+    });
+  
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadData(); // Reload data after editing
+      }
+    });
+  }
+  
   /// Delete Expense 
   deleteItem(element: any) {
     // Send the delete request using the correct ID

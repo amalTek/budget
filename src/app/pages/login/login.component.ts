@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-login',
@@ -15,35 +16,46 @@ export class LoginComponent {
   public isLogingMode :boolean =true;
   constructor(
     private userService: UserService,
-    private router: Router,private builder: FormBuilder
+    private router: Router,private builder: FormBuilder,private snackBar: MatSnackBar
   ) {this.formulaireForm = this.builder.group({})}
   public formulaireForm: FormGroup;
   public fieldArray :any[]=[];
+  ngOnInit(){
+    this.formulaireForm = this.builder.group({
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required]
+    });
+  }
 
 
   onLogin() {
-    // Your login logic here
-    let test = {
-      firstName: 'manel',
-      lastName: 'abbes',
-      password:'rfhrklfgn',
-      email:'fdsfddf'
-      // compte_bancaire:'jhbfj'
-    };
+    const val = this.formulaireForm.value;
     this.router.navigate(['/dashboard']);
 
-    this.userService.registerUser(
-test
+   
+
+    this.userService.registerUser(val
     ).subscribe({
       next: (response) => {
+        localStorage.setItem('authToken', response);
+        this.router.navigate(['/dashboard']);
       },
       error: (err) => {
-        console.error('Login failed', err);
+        this.snackBar.open('⚠️ Error occurred while saving user.', 'Close', {
+          duration: 4000,
+          panelClass: ['warn-snackbar'],
+          verticalPosition: 'top',
+          horizontalPosition: 'center',
+        });
       }
     });
   }
   redirectToSignUpPage(){
     this.isLogingMode = !this.isLogingMode
+    this.formulaireForm.reset();
 
   }
 
@@ -53,12 +65,18 @@ test
     this.userService.saveUser(val)
       .subscribe(
         response => {
-          console.log(response);
           this.formulaireForm.reset();
+          this.isLogingMode = true;
 
         },
         error => {
           console.error(error);
+          this.snackBar.open('⚠️ Error occurred while saving user.', 'Close', {
+            duration: 4000,
+            panelClass: ['warn-snackbar'],
+            verticalPosition: 'top',
+            horizontalPosition: 'center',
+          });
         }
       );
     console.log(this.fieldArray);

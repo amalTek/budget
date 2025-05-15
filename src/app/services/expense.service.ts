@@ -20,4 +20,8 @@ export class ExpenseService {
   createExpenseData(expense: any): Observable<any> {
     return this.httpClient.post<any>('http://localhost:8080/api/expenses/createExpense', expense);
   }
+  
+  updateExpenseData(data: any) {
+    return this.httpClient.put(`http://localhost:8080/api/expenses/${data.id}`, data);
+  }
 }
