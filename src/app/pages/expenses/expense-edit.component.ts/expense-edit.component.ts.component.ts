@@ -51,7 +51,6 @@ export class ExpenseEditComponentTsComponent {
   onSubmit(form: NgForm): void {
     if (form.valid) {
       const formData = { ...form.value, id: this.data?.id }; // include ID for update
-      console.log("formData",formData)
 
       // Call update instead of create
       this.expenseService.updateExpenseData(formData).subscribe({

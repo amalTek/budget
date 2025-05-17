@@ -1,1 +1,140 @@
-<p>invoicingedit works!</p>
+<h2 mat-dialog-title class="dialog-title">
+    Edit Invoice
+    <button mat-icon-button mat-dialog-close class="close-button" aria-label="Close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </h2>
+  
+  <form #form="ngForm" (ngSubmit)="onSubmit(form)" autocomplete="off" class="dialog-form">
+    <mat-dialog-content class="dialog-content">
+  
+      <!-- Corporate Info -->
+      <div class="form-section">
+        <h3>Corporate Information</h3>
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Corporate Name</mat-label>
+          <input matInput name="corporate" [(ngModel)]="invoice.corporate" required>
+        </mat-form-field>
+        
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Corporate Address</mat-label>
+          <textarea matInput name="address" [(ngModel)]="invoice.address" required></textarea>
+        </mat-form-field>
+      </div>
+  
+      <!-- Client Info -->
+      <div class="form-section">
+        <h3>Client Information</h3>
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Client Name</mat-label>
+          <input matInput name="clientName" [(ngModel)]="invoice.clientName" required>
+        </mat-form-field>
+        
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Client Email</mat-label>
+          <input matInput type="email" name="clientEmail" [(ngModel)]="invoice.clientEmail" required>
+        </mat-form-field>
+        
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Client Address</mat-label>
+          <textarea matInput name="clientAddress" [(ngModel)]="invoice.clientAddress" required></textarea>
+        </mat-form-field>
+      </div>
+  
+      <!-- Invoice Dates -->
+      <div class="form-section">
+        <h3>Invoice Dates</h3>
+        <div class="date-row">
+          <mat-form-field appearance="fill" class="half-width">
+            <mat-label>Invoice Date</mat-label>
+            <input matInput [matDatepicker]="invoicePicker" name="invoiceDate" [(ngModel)]="invoice.invoiceDate" required>
+            <mat-datepicker-toggle matSuffix [for]="invoicePicker"></mat-datepicker-toggle>
+            <mat-datepicker #invoicePicker></mat-datepicker>
+          </mat-form-field>
+          
+          <mat-form-field appearance="fill" class="half-width">
+            <mat-label>Due Date</mat-label>
+            <input matInput [matDatepicker]="duePicker" name="dueDate" [(ngModel)]="invoice.dueDate" required>
+            <mat-datepicker-toggle matSuffix [for]="duePicker"></mat-datepicker-toggle>
+            <mat-datepicker #duePicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+        
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Payment Terms</mat-label>
+          <input matInput name="paymentTerms" [(ngModel)]="invoice.paymentTerms" required>
+        </mat-form-field>
+      </div>
+  
+      <!-- Items -->
+      <div class="form-section">
+        <h3>Items</h3>
+        <div class="item-row" *ngFor="let item of invoice.items; let i = index">
+          <mat-form-field appearance="fill" class="item-field">
+            <mat-label>Designation</mat-label>
+            <input matInput name="designation{{i}}" [(ngModel)]="item.designation" required>
+          </mat-form-field>
+          
+          <mat-form-field appearance="fill" class="quantity-field">
+            <mat-label>Quantity</mat-label>
+            <input matInput type="number" name="quantity{{i}}" [(ngModel)]="item.quantity" required>
+          </mat-form-field>
+          
+          <mat-form-field appearance="fill" class="price-field">
+            <mat-label>Price</mat-label>
+            <input matInput type="number" name="price{{i}}" [(ngModel)]="item.price" required>
+          </mat-form-field>
+          
+          <mat-form-field appearance="fill" class="amount-field">
+            <mat-label>Amount</mat-label>
+            <input matInput type="number" name="amount{{i}}" [(ngModel)]="item.amount" [value]="item.quantity * item.price" readonly>
+          </mat-form-field>
+        </div>
+      </div>
+  
+      <!-- Totals -->
+      <div class="form-section">
+        <h3>Totals</h3>
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Currency</mat-label>
+          <mat-select name="currency" [(ngModel)]="invoice.currency" required>
+            <mat-option value="USD">USD</mat-option>
+            <mat-option value="EUR">EUR</mat-option>
+            <mat-option value="GBP">GBP</mat-option>
+          </mat-select>
+        </mat-form-field>
+        
+        <mat-form-field appearance="fill" class="half-width">
+          <mat-label>VAT Rate (%)</mat-label>
+          <input matInput type="number" name="vatRate" [(ngModel)]="invoice.vatRate" required>
+        </mat-form-field>
+        
+        <mat-form-field appearance="fill" class="half-width">
+          <mat-label>VAT Amount</mat-label>
+          <input matInput type="number" name="vatAmount" [(ngModel)]="invoice.vatAmount" readonly>
+        </mat-form-field>
+        
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Total Amount</mat-label>
+          <input matInput type="number" name="totalAmount" [(ngModel)]="invoice.totalAmount" readonly>
+        </mat-form-field>
+      </div>
+  
+      <!-- Status -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Status</mat-label>
+        <mat-select name="status" [(ngModel)]="invoice.status" required>
+          <mat-option value="draft">Draft</mat-option>
+          <mat-option value="sent">Sent</mat-option>
+          <mat-option value="paid">Paid</mat-option>
+          <mat-option value="cancelled">Cancelled</mat-option>
+        </mat-select>
+      </mat-form-field>
+  
+    </mat-dialog-content>
+  
+    <mat-dialog-actions align="end">
+      <button mat-stroked-button color="warn" mat-dialog-close type="button">Cancel</button>
+      <button mat-flat-button color="primary" type="submit">Save</button>
+    </mat-dialog-actions>
+  </form>

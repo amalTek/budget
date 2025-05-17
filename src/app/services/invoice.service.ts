@@ -17,11 +17,11 @@ export class InvoiceService {
   deleteInvoiceData(id: number): Observable<any> {
     return this.httpClient.delete<any>(`${this.apiUrl}/${id}`);
   }
-  createExpenseData(expense: any): Observable<any> {
-    return this.httpClient.post<any>('http://localhost:8080/api/expenses/createExpense', expense);
+  createInvoiceData(expense: any): Observable<any> {
+    return this.httpClient.post<any>('http://localhost:8080/api/invoices/createNewInvoice', expense);
   }
   
-  updateExpenseData(data: any) {
-    return this.httpClient.put(`http://localhost:8080/api/expenses/${data.id}`, data);
+  updateInvoiceData(data: any) {
+    return this.httpClient.put(`http://localhost:8080/api/invoices/${data.id}`, data);
   }
 }

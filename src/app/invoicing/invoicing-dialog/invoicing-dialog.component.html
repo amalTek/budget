@@ -1,1 +1,128 @@
-<p>invoicing-dialog works!</p>
+<h2 mat-dialog-title class="dialog-title">
+    Add Invoice
+    <button mat-icon-button mat-dialog-close class="close-button" aria-label="Close">
+      <mat-icon>close</mat-icon>
+    </button>
+</h2>
+
+<form #form="ngForm" (ngSubmit)="onSubmit(form)" autocomplete="off" class="dialog-form">
+  <mat-dialog-content>
+
+    <!-- Corporate Info -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Corporate</mat-label>
+      <input matInput name="corporate" [(ngModel)]="invoice.corporate" required>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Address</mat-label>
+      <input matInput name="address" [(ngModel)]="invoice.address" required>
+    </mat-form-field>
+
+    <!-- Client Info -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Client Name</mat-label>
+      <input matInput name="clientName" [(ngModel)]="invoice.clientName" required>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Client Email</mat-label>
+      <input matInput name="clientEmail" [(ngModel)]="invoice.clientEmail" type="email">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Client Address</mat-label>
+      <input matInput name="clientAddress" [(ngModel)]="invoice.clientAddress">
+    </mat-form-field>
+
+    <!-- Dates -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Invoice Date</mat-label>
+      <input matInput [matDatepicker]="invoicePicker" name="invoiceDate" 
+             [(ngModel)]="invoice.invoiceDate" required>
+      <mat-datepicker-toggle matSuffix [for]="invoicePicker"></mat-datepicker-toggle>
+      <mat-datepicker #invoicePicker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Due Date</mat-label>
+      <input matInput [matDatepicker]="duePicker" name="dueDate" 
+             [(ngModel)]="invoice.dueDate" required>
+      <mat-datepicker-toggle matSuffix [for]="duePicker"></mat-datepicker-toggle>
+      <mat-datepicker #duePicker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Payment Terms</mat-label>
+      <input matInput name="paymentTerms" [(ngModel)]="invoice.paymentTerms">
+    </mat-form-field>
+
+    <!-- Currency -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Currency</mat-label>
+      <mat-select name="currency" [(ngModel)]="invoice.currency" required>
+        <mat-option value="TND">TND (Tunisian Dinar)</mat-option>
+        <mat-option value="USD">USD (US Dollar)</mat-option>
+        <mat-option value="EUR">EUR (Euro)</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Item Details -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Designation</mat-label>
+      <input matInput name="designation" [(ngModel)]="invoice.designation" required>
+    </mat-form-field>
+
+    <div class="row-fields">
+      <mat-form-field appearance="fill" class="half-width">
+        <mat-label>Quantity</mat-label>
+        <input matInput type="number" name="quantity" [(ngModel)]="invoice.quantity" 
+               (change)="calculateAmount()" required min="1">
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="half-width">
+        <mat-label>Price</mat-label>
+        <input matInput type="number" name="price" [(ngModel)]="invoice.price" 
+               (change)="calculateAmount()" required min="0" step="0.001">
+      </mat-form-field>
+    </div>
+
+    <!-- Calculated Fields -->
+    <mat-form-field appearance="fill" class="full-width" floatLabel="always">
+      <mat-label>Amount</mat-label>
+      <input matInput name="amount" [value]="formatCurrency(invoice.amount)" readonly>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>VAT Rate</mat-label>
+      <input matInput type="number" name="vatRate" [(ngModel)]="invoice.vatRate" 
+             (change)="calculateAmount()" required min="0" max="100" step="0.01">
+      <span matSuffix>%</span>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width" floatLabel="always">
+      <mat-label>VAT Amount</mat-label>
+      <input matInput name="vatAmount" [value]="formatCurrency(invoice.vatAmount)" readonly>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width" floatLabel="always">
+      <mat-label>Total Amount</mat-label>
+      <input matInput name="totalAmount" [value]="formatCurrency(invoice.totalAmount)" readonly>
+    </mat-form-field>
+
+    <!-- Status -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Status</mat-label>
+      <mat-select name="status" [(ngModel)]="invoice.status" required>
+        <mat-option value="draft">Draft</mat-option>
+        <mat-option value="sent">Sent</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-stroked-button color="warn" mat-dialog-close type="button">Cancel</button>
+    <button mat-flat-button color="primary" type="submit">Save</button>
+  </mat-dialog-actions>
+</form>

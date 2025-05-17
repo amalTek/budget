@@ -238,9 +238,9 @@
   }
   
   .status-badge.overdue {
-    background-color: #f3e8ff;
-    color: #a855f7;
-    border: 1px solid #e9d5ff;
+    background-color: #c54848;
+    color: #ffffff;
+    border: 1px solid #ec9a9a;
   }
   
   /* Responsive adjustments */

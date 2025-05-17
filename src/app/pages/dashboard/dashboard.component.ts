@@ -82,4 +82,12 @@ export class DashboardComponent {
       }
     });
   }
+  get currentCurrency(): string {
+  return 'TND'; // Or make this dynamic if you have currency selection
 }
+
+formatCurrency(value: number): string {
+  if (!value && value !== 0) return `0.000 ${this.currentCurrency}`;
+  return value.toFixed(3) + ' ' + this.currentCurrency;
+
+}}

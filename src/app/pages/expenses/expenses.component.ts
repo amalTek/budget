@@ -16,7 +16,6 @@ import { ExpenseEditComponentTsComponent } from './expense-edit.component.ts/exp
     MatIconModule,
     ExpenseDialogComponent,
     MatDialogModule,
-    ExpenseDialogComponent
   ] , templateUrl: './expenses.component.html',
   styleUrls: ['./expenses.component.css']
 })

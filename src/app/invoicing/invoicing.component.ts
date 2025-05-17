@@ -5,6 +5,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
+import { InvoicingeditComponent } from './invoicingedit/invoicingedit.component';
+import { InvoicingDialogComponent } from './invoicing-dialog/invoicing-dialog.component';
 
 @Component({
   selector: 'app-invoicing',
@@ -14,7 +16,9 @@ import { CommonModule } from '@angular/common';
     MatTableModule,
     MatButtonModule,
     MatIconModule,
-    MatDialogModule
+    MatDialogModule,
+    InvoicingeditComponent,InvoicingDialogComponent
+
   ],
   templateUrl: './invoicing.component.html',
   styleUrls: ['./invoicing.component.css']
@@ -73,19 +77,36 @@ export class InvoicingComponent {
   }
 
   openDialog(): void {
-    // Implement dialog opening logic
-    console.log('Open dialog to add new invoice');
+      const dialogRef = this.dialog.open(InvoicingDialogComponent, {
+         width: '400px'
+       });
+   
+       dialogRef.afterClosed().subscribe(result => {
+         if (result) {
+           this.loadData()
+   
+         }
+       });
   }
 
   openEditExpense(element: any): void {
-    // Implement edit dialog opening logic
-    console.log('Edit invoice:', element);
+    const dialogRef = this.dialog.open(InvoicingeditComponent, {
+       width: '400px',
+       data: element // Pass the selected row
+     });
+   
+     dialogRef.afterClosed().subscribe(result => {
+       if (result) {
+         this.loadData(); // Reload data after editing
+       }
+     });
   }
   
+  // Remove the deleted item from the dataSource (UI update)
   deleteItem(element: any) {
     this.invoiceService.deleteInvoiceData(element.id).subscribe({
       next: () => {
-        // Remove the deleted item from the dataSource (UI update)
+       
         this.dataSource = this.dataSource.filter((item: any) => item.id !== element.id);
         console.log('Item deleted:', element);
       },

@@ -3,7 +3,29 @@
   justify-content: flex-end;
   padding: 16px 24px;
 }
+.dashboard-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #3f51b5;
+  text-align: left;
+  padding-left: 16px;
+  display: flex;
+  align-items: center;
+    height:5px;
 
+  gap: 12px; /* Space between icon and text */
+}
+.summary-card h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 500;
+  white-space: nowrap; /* Prevent currency from wrapping */
+}
+.dashboard-title mat-icon {
+  font-size: 32px; /* Slightly larger than text */
+  width: 32px;
+}
 .month-picker-wrapper {
   display: flex;
   align-items: center;

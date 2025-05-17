@@ -1,0 +1,43 @@
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.half-width {
+  width: calc(50% - 8px);
+}
+
+.dialog-title {
+  font-weight: 600;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-button {
+  margin: -8px;
+}
+
+mat-dialog-actions {
+  margin-top: 20px;
+}
+
+button {
+  min-width: 100px;
+}
+
+.row-fields {
+  display: flex;
+  gap: 16px;
+}
+
+/* Make readonly fields visually distinct */
+.mat-form-field.readonly-field .mat-form-field-outline {
+  background-color: #f5f5f5;
+}
