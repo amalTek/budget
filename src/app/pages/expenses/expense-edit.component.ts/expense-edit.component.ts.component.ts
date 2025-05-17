@@ -56,7 +56,6 @@ export class ExpenseEditComponentTsComponent {
       // Call update instead of create
       this.expenseService.updateExpenseData(formData).subscribe({
         next: (response) => {
-          console.log('Expense updated:', response);
           form.resetForm();
           this.dialogRef.close(response);
         },
