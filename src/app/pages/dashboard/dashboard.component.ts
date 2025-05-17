@@ -67,15 +67,9 @@ export class DashboardComponent {
       next: (response) => {
         this.financialSummary = response;
         
-        if (response && response.length > 0) {
-          this.currentChartData = response[0];
-        } else {
-          this.currentChartData = {
-            totalInvoicing: 0,
-            totalExpenses: 0,
-            currentBalance: 0
-          };
-        }
+        this.currentChartData = response && response.length > 0 
+          ? response[0] 
+          : { totalInvoicing: 0, totalExpenses: 0, currentBalance: 0 };
       },
       error: (err) => {
         console.error('Failed to load financial data:', err);
