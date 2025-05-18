@@ -51,11 +51,66 @@ export class ExpensesComponent {
 
   }
 
-  getTotalAmount(): any {
-     const valueTotal = this.dataSource?.map(item => item.amount) ?.reduce((acc, value) => acc + value, 0) || 0;
-     return this.formatCurrency(valueTotal)
-     
+getTotalAmount(): string {
+  const valueTotal = this.dataSource
+    ?.filter(item => item.status === 'approved')
+    ?.map(item => item.amount)
+    ?.reduce((acc, value) => acc + (value || 0), 0) || 0;
+
+  return this.formatCurrency(valueTotal);
+}
+getCurrentMonthExpenses(): number {
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  return this.dataSource
+    ?.filter(item => {
+      const itemDate = new Date(item.date); // assuming you have a date field
+      return item.status === 'approved' && 
+             itemDate.getMonth() === currentMonth && 
+             itemDate.getFullYear() === currentYear;
+    })
+    ?.map(item => item.amount)
+    ?.reduce((acc, value) => acc + (value || 0), 0) || 0;
+}
+
+updateExpensesOnly(): void {
+    const totalExpenses = this.calculateCurrentMonthExpenses();
+    let currentMonthSummary: any = {
+  totalInvoicing: 0,
+  totalExpenses: 0,
+  currentBalance: 0,
+  createdAt: new Date()
+};
+    this.expenseService.updateCurrentMonthExpenses(totalExpenses)
+      .subscribe({
+        next: (updatedSummary) => {
+          currentMonthSummary = updatedSummary;
+          // Show success notification
+        },
+        error: (err) => {
+       
+          console.error(err);
+        }
+      });
   }
+
+  private calculateCurrentMonthExpenses(): number {
+    // Your expense calculation logic here
+    // Example:
+    return this.dataSource
+      ?.filter(item => item.status === 'approved' && this.isCurrentMonth(item.date))
+      ?.reduce((sum, item) => sum + (item.amount || 0), 0) || 0;
+  }
+
+  private isCurrentMonth(date: Date | string): boolean {
+    const now = new Date();
+    const itemDate = new Date(date);
+    return itemDate.getMonth() === now.getMonth() && 
+           itemDate.getFullYear() === now.getFullYear();
+  }
+
   editItem(element: any) {
     console.log('Edit:', element);
     // You can add logic here to open a dialog or inline form for editing
@@ -82,7 +137,8 @@ export class ExpensesComponent {
   
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.loadData(); // Reload data after editing
+        this.loadData();
+        this.updateExpensesOnly() // Reload data after editing
       }
     });
   }
