@@ -6,6 +6,7 @@ import { ExpenseService } from '../../services/expense.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ExpenseDialogComponent } from './expense-dialog/expense-dialog.component';
 import { ExpenseEditComponentTsComponent } from './expense-edit.component.ts/expense-edit.component.ts.component';
+import { CurrencyPipe } from '@angular/common';
 
 @Component({
   standalone: true,
@@ -15,7 +16,7 @@ import { ExpenseEditComponentTsComponent } from './expense-edit.component.ts/exp
     MatButtonModule,
     MatIconModule,
     ExpenseDialogComponent,
-    MatDialogModule,
+    MatDialogModule,CurrencyPipe
   ] , templateUrl: './expenses.component.html',
   styleUrls: ['./expenses.component.css']
 })
@@ -33,6 +34,14 @@ export class ExpensesComponent {
   ngOnInit() {
     this.loadData();
   }
+  get currentCurrency(): string {
+  return 'TND'; // Or make this dynamic if you have currency selection
+}
+  formatCurrency(value: number): string {
+  if (!value && value !== 0) return `0.000 ${this.currentCurrency}`;
+  return value.toFixed(3) + ' ' + this.currentCurrency;
+
+}
   loadData() {
     this.expenseService.loadExpenseData().subscribe(
       response => {
@@ -42,9 +51,9 @@ export class ExpensesComponent {
 
   }
 
-  getTotalAmount(): number {
-    return this.dataSource?.map(item => item.amount) ?.reduce((acc, value) => acc + value, 0) || 0;
-     
+  getTotalAmount(): any {
+     const valueTotal = this.dataSource?.map(item => item.amount) ?.reduce((acc, value) => acc + value, 0) || 0;
+     return this.formatCurrency(valueTotal)
      
   }
   editItem(element: any) {

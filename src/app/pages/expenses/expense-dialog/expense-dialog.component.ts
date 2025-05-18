@@ -30,7 +30,7 @@ export class ExpenseDialogComponent {
     private expenseService: ExpenseService,private dialogRef: MatDialogRef<ExpenseDialogComponent>
   ) {}
   onSubmit(form: NgForm): void {
-    if (form.valid) {
+
       const formData = form.value;
   
       this.expenseService.createExpenseData(formData).subscribe({
@@ -43,9 +43,7 @@ export class ExpenseDialogComponent {
           console.error('Failed to create expense:', err);
         }
       });
-    } else {
-      console.warn('Form is invalid');
-    }
+   
   }
   
   
