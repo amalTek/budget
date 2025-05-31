@@ -48,7 +48,7 @@ logout(): void {
     
     // Navigate to login page with preventRedirect flag
     this.router.navigate(['/login'], {
-      queryParams: { preventRedirect: 'true' }
+      // queryParams: { preventRedirect: 'true' }
     });
     
     // Force full page reload to clear all application state

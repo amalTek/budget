@@ -69,7 +69,7 @@ export class InvoicingDialogComponent {
   }
 
   onSubmit(form: NgForm) {
-    if (form.valid) {
+ 
       this.calculateAmount();
       
       // Convert dates to ISO string format
@@ -89,7 +89,7 @@ export class InvoicingDialogComponent {
           this.snackBar.open('Error creating invoice', 'Close', { duration: 3000 });
         }
       });
-    }
+    
   }
 
   private formatDate(date: Date): string {

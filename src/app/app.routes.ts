@@ -22,7 +22,7 @@ export const routes: Routes = [
     component: LayoutComponent,
     children: [
 
-      { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard]  },
+      { path: 'dashboard', component: DashboardComponent,   },
       { path: 'expenses', component: ExpensesComponent },
       { path: 'invoicing', component: InvoicingComponent },
       { path: 'contactUs', component: ContactUsComponent }
