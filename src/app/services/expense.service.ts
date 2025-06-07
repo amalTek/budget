@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
 export class ExpenseService {
 
   constructor(private httpClient: HttpClient) { }
-  private apiUrl = 'http://localhost:8080/api';
+  private apiUrl = 'http://localhost:8080/api/expenses';
   loadExpenseData(): Observable<any> {
     return this.httpClient.get<any>('http://localhost:8080/api/expenses/loadExpenseData') // Adjust the URL as per your backend endpoint
   }

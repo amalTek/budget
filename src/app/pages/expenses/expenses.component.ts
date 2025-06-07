@@ -45,8 +45,22 @@ export class ExpensesComponent {
   loadData() {
     this.expenseService.loadExpenseData().subscribe(
       response => {
-        this.dataSource = response
+        this.dataSource = response;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
+        // Update statuses if the date is before the curreb=nt date 
+       this.dataSource=  this.dataSource?.map(item => {
+          const itemDate = new Date(item.date);
+          if (itemDate < today) {
+            return { ...item, status: "approved" };
+          }
+          return item;
+        });
+              this.groupTransactionsByMonth()
+
+console.log("  this.dataSource",  this.dataSource)
+      
       });
 
   }
@@ -56,9 +70,31 @@ getTotalAmount(): string {
     ?.filter(item => item.status === 'approved')
     ?.map(item => item.amount)
     ?.reduce((acc, value) => acc + (value || 0), 0) || 0;
-
   return this.formatCurrency(valueTotal);
 }
+
+
+
+
+ groupTransactionsByMonth() {
+   const tt = this.dataSource.reduce((acc, transaction) => {
+        if (transaction.status !== 'approved') return acc;
+        
+        const date = new Date(transaction.date);
+        const month = date.getMonth() + 1;
+        const monthKey = `${date.getFullYear()}-${month.toString().padStart(2, '0')}`;
+        
+        if (!acc[monthKey]) {
+            acc[monthKey] = [];
+        }
+        
+        acc[monthKey].push(transaction);
+        return acc;
+    }, {});
+    console.log("tt",tt)
+    return tt
+  }
+
 getCurrentMonthExpenses(): number {
   const now = new Date();
   const currentMonth = now.getMonth();
