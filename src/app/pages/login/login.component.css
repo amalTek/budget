@@ -95,3 +95,35 @@ margin-right: 3px;
   text-decoration: none;
   color: black;
 }
+.role-selection {
+    margin: 20px 0;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+}
+
+.role-selection h3 {
+    color: #fff;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.checkbox-group {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.checkbox-group label {
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.checkbox-group input[type="radio"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}

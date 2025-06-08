@@ -1,9 +1,12 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { FormsModule, NgForm } from '@angular/forms';
 import { InvoiceService } from '../../services/invoice.service';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -15,6 +18,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 @Component({
   selector: 'app-invoicingedit',
   imports: [
+    CommonModule,
     FormsModule,
     MatFormFieldModule,
     MatInputModule,
@@ -22,10 +26,11 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatDatepickerModule,
     MatNativeDateModule,
     MatDialogModule,
-    MatButtonModule,MatIconModule
+    MatButtonModule,
+    MatIconModule,
   ],
   templateUrl: './invoicingedit.component.html',
-  styleUrls: ['./invoicingedit.component.css']
+  styleUrls: ['./invoicingedit.component.css'],
 })
 export class InvoicingeditComponent implements OnInit {
   invoice: any = {
@@ -38,16 +43,18 @@ export class InvoicingeditComponent implements OnInit {
     dueDate: new Date(),
     paymentTerms: '',
     currency: 'USD',
-    items: [{
-      designation: '',
-      quantity: 1,
-      price: 0,
-      amount: 0
-    }],
+    items: [
+      {
+        designation: '',
+        quantity: 1,
+        price: 0,
+        amount: 0,
+      },
+    ],
     vatRate: 0,
     vatAmount: 0,
     totalAmount: 0,
-    status: 'draft'
+    status: 'draft',
   };
 
   constructor(
@@ -61,12 +68,14 @@ export class InvoicingeditComponent implements OnInit {
       this.invoice = { ...this.data };
       // Ensure items array exists
       if (!this.invoice.items || this.invoice.items.length === 0) {
-        this.invoice.items = [{
-          designation: '',
-          quantity: 1,
-          price: 0,
-          amount: 0
-        }];
+        this.invoice.items = [
+          {
+            designation: '',
+            quantity: 1,
+            price: 0,
+            amount: 0,
+          },
+        ];
       }
     }
   }
@@ -78,8 +87,11 @@ export class InvoicingeditComponent implements OnInit {
     });
 
     // Calculate subtotal
-    const subtotal = this.invoice.items.reduce((sum: number, item: any) => sum + item.amount, 0);
-    
+    const subtotal = this.invoice.items.reduce(
+      (sum: number, item: any) => sum + item.amount,
+      0
+    );
+
     // Calculate VAT and total
     this.invoice.vatAmount = subtotal * (this.invoice.vatRate / 100);
     this.invoice.totalAmount = subtotal + this.invoice.vatAmount;
@@ -88,10 +100,10 @@ export class InvoicingeditComponent implements OnInit {
   onSubmit(form: NgForm) {
     if (form.valid) {
       this.calculateAmounts();
-      
-      const formData = { 
+
+      const formData = {
         ...this.invoice,
-        id: this.data?.id 
+        id: this.data?.id,
       };
 
       this.invoiceService.updateInvoiceData(formData).subscribe({
@@ -101,7 +113,7 @@ export class InvoicingeditComponent implements OnInit {
         },
         error: (err) => {
           console.error('Failed to update invoice:', err);
-        }
+        },
       });
     }
   }
@@ -111,7 +123,7 @@ export class InvoicingeditComponent implements OnInit {
       designation: '',
       quantity: 1,
       price: 0,
-      amount: 0
+      amount: 0,
     });
   }
 

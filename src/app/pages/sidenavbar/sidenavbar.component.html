@@ -1,29 +1,53 @@
 <div class="sidebar">
   <div class="side-header">
-    <img src="/assets/malihaa.svg" alt="Budget Icon" class="budget-icon">
+    <img src="/assets/malihaa.svg" alt="Budget Icon" class="budget-icon" />
     <h1>MyBudget</h1>
   </div>
   <div class="sidenav">
     <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">
       <i class="material-icons">dashboard</i>Dashboard
     </a>
-    
+
     <a class="nav-link" routerLink="/expenses" routerLinkActive="active">
       <i class="material-icons">receipt_long</i> Expenses
     </a>
-    
+
     <a class="nav-link" routerLink="/invoicing" routerLinkActive="active">
       <i class="material-icons">request_quote</i> Invoicing
     </a>
-    
-    <a class="nav-link" routerLink="/contactUs" routerLinkActive="active">
-      <i class="material-icons">settings</i> Contact Us
+
+    <a
+      class="nav-link"
+      routerLink="/financial-pie-chart"
+      routerLinkActive="active"
+    >
+      <i class="material-icons">pie_chart</i> Financial Chart
     </a>
-    
-    <!-- Add this logout button at the bottom -->
-    <div class="logout-container">
-      <a class="nav-link logout-btn" (click)="logout()">
-        <i class="material-icons">logout</i> Logout
+
+    <a
+      *ngIf="isAdmin"
+      class="nav-link"
+      routerLink="/user-management"
+      routerLinkActive="active"
+    >
+      <i class="material-icons">people</i> User Management
+    </a>
+
+    <div class="nav-item">
+      <a routerLink="/contact-us" routerLinkActive="active" class="nav-link">
+        <i class="fas fa-envelope"></i>
+        <span>Contact Us</span>
+      </a>
+    </div>
+
+    <div class="nav-item">
+      <a
+        (click)="logout()"
+        class="nav-link logout-link"
+        style="cursor: pointer"
+      >
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Logout</span>
       </a>
     </div>
   </div>

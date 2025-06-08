@@ -6,7 +6,6 @@ import { ExpenseService } from '../../services/expense.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ExpenseDialogComponent } from './expense-dialog/expense-dialog.component';
 import { ExpenseEditComponentTsComponent } from './expense-edit.component.ts/expense-edit.component.ts.component';
-import { CurrencyPipe } from '@angular/common';
 
 @Component({
   standalone: true,
@@ -16,135 +15,145 @@ import { CurrencyPipe } from '@angular/common';
     MatButtonModule,
     MatIconModule,
     ExpenseDialogComponent,
-    MatDialogModule,CurrencyPipe
-  ] , templateUrl: './expenses.component.html',
-  styleUrls: ['./expenses.component.css']
+    MatDialogModule,
+  ],
+  templateUrl: './expenses.component.html',
+  styleUrls: ['./expenses.component.css'],
 })
 export class ExpensesComponent {
   constructor(
     private expenseService: ExpenseService,
     private dialog: MatDialog
-  ) { }
-  displayedColumns: string[] = ['date', 'category', 'description', 'amount', 'status', 'actions'];
-
-  dataSource:any[] = [
-
+  ) {}
+  displayedColumns: string[] = [
+    'date',
+    'category',
+    'description',
+    'amount',
+    'status',
+    'actions',
   ];
+
+  dataSource: any[] = [];
 
   ngOnInit() {
     this.loadData();
   }
   get currentCurrency(): string {
-  return 'TND'; // Or make this dynamic if you have currency selection
-}
+    return 'TND'; // Or make this dynamic if you have currency selection
+  }
   formatCurrency(value: number): string {
-  if (!value && value !== 0) return `0.000 ${this.currentCurrency}`;
-  return value.toFixed(3) + ' ' + this.currentCurrency;
-
-}
+    if (!value && value !== 0) return `0.000 ${this.currentCurrency}`;
+    return value.toFixed(3) + ' ' + this.currentCurrency;
+  }
   loadData() {
-    this.expenseService.loadExpenseData().subscribe(
-      response => {
-        this.dataSource = response;
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+    this.expenseService.loadExpenseData().subscribe((response) => {
+      this.dataSource = response;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-        // Update statuses if the date is before the curreb=nt date 
-       this.dataSource=  this.dataSource?.map(item => {
-          const itemDate = new Date(item.date);
-          if (itemDate < today) {
-            return { ...item, status: "approved" };
-          }
-          return item;
-        });
-              this.groupTransactionsByMonth()
-
-console.log("  this.dataSource",  this.dataSource)
-      
-      });
-
-  }
-
-getTotalAmount(): string {
-  const valueTotal = this.dataSource
-    ?.filter(item => item.status === 'approved')
-    ?.map(item => item.amount)
-    ?.reduce((acc, value) => acc + (value || 0), 0) || 0;
-  return this.formatCurrency(valueTotal);
-}
-
-
-
-
- groupTransactionsByMonth() {
-   const tt = this.dataSource.reduce((acc, transaction) => {
-        if (transaction.status !== 'approved') return acc;
-        
-        const date = new Date(transaction.date);
-        const month = date.getMonth() + 1;
-        const monthKey = `${date.getFullYear()}-${month.toString().padStart(2, '0')}`;
-        
-        if (!acc[monthKey]) {
-            acc[monthKey] = [];
+      // Update statuses if the date is before the curreb=nt date
+      this.dataSource = this.dataSource?.map((item) => {
+        const itemDate = new Date(item.date);
+        if (itemDate < today) {
+          return { ...item, status: 'approved' };
         }
-        
-        acc[monthKey].push(transaction);
-        return acc;
-    }, {});
-    console.log("tt",tt)
-    return tt
+        return item;
+      });
+      this.groupTransactionsByMonth();
+
+      console.log('  this.dataSource', this.dataSource);
+    });
   }
 
-getCurrentMonthExpenses(): number {
-  const now = new Date();
-  const currentMonth = now.getMonth();
-  const currentYear = now.getFullYear();
+  getTotalAmount(): string {
+    const valueTotal =
+      this.dataSource
+        ?.filter((item) => item.status === 'approved')
+        ?.map((item) => item.amount)
+        ?.reduce((acc, value) => acc + (value || 0), 0) || 0;
+    return this.formatCurrency(valueTotal);
+  }
 
-  return this.dataSource
-    ?.filter(item => {
-      const itemDate = new Date(item.date); // assuming you have a date field
-      return item.status === 'approved' && 
-             itemDate.getMonth() === currentMonth && 
-             itemDate.getFullYear() === currentYear;
-    })
-    ?.map(item => item.amount)
-    ?.reduce((acc, value) => acc + (value || 0), 0) || 0;
-}
+  groupTransactionsByMonth() {
+    const tt = this.dataSource.reduce((acc, transaction) => {
+      if (transaction.status !== 'approved') return acc;
 
-updateExpensesOnly(): void {
+      const date = new Date(transaction.date);
+      const month = date.getMonth() + 1;
+      const monthKey = `${date.getFullYear()}-${month
+        .toString()
+        .padStart(2, '0')}`;
+
+      if (!acc[monthKey]) {
+        acc[monthKey] = [];
+      }
+
+      acc[monthKey].push(transaction);
+      return acc;
+    }, {});
+    console.log('tt', tt);
+    return tt;
+  }
+
+  getCurrentMonthExpenses(): number {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    return (
+      this.dataSource
+        ?.filter((item) => {
+          const itemDate = new Date(item.date); // assuming you have a date field
+          return (
+            item.status === 'approved' &&
+            itemDate.getMonth() === currentMonth &&
+            itemDate.getFullYear() === currentYear
+          );
+        })
+        ?.map((item) => item.amount)
+        ?.reduce((acc, value) => acc + (value || 0), 0) || 0
+    );
+  }
+
+  updateExpensesOnly(): void {
     const totalExpenses = this.calculateCurrentMonthExpenses();
     let currentMonthSummary: any = {
-  totalInvoicing: 0,
-  totalExpenses: 0,
-  currentBalance: 0,
-  createdAt: new Date()
-};
-    this.expenseService.updateCurrentMonthExpenses(totalExpenses)
-      .subscribe({
-        next: (updatedSummary) => {
-          currentMonthSummary = updatedSummary;
-          // Show success notification
-        },
-        error: (err) => {
-       
-          console.error(err);
-        }
-      });
+      totalInvoicing: 0,
+      totalExpenses: 0,
+      currentBalance: 0,
+      createdAt: new Date(),
+    };
+    this.expenseService.updateCurrentMonthExpenses(totalExpenses).subscribe({
+      next: (updatedSummary) => {
+        currentMonthSummary = updatedSummary;
+        // Show success notification
+      },
+      error: (err) => {
+        console.error(err);
+      },
+    });
   }
 
   private calculateCurrentMonthExpenses(): number {
     // Your expense calculation logic here
     // Example:
-    return this.dataSource
-      ?.filter(item => item.status === 'approved' && this.isCurrentMonth(item.date))
-      ?.reduce((sum, item) => sum + (item.amount || 0), 0) || 0;
+    return (
+      this.dataSource
+        ?.filter(
+          (item) => item.status === 'approved' && this.isCurrentMonth(item.date)
+        )
+        ?.reduce((sum, item) => sum + (item.amount || 0), 0) || 0
+    );
   }
 
   private isCurrentMonth(date: Date | string): boolean {
     const now = new Date();
     const itemDate = new Date(date);
-    return itemDate.getMonth() === now.getMonth() && 
-           itemDate.getFullYear() === now.getFullYear();
+    return (
+      itemDate.getMonth() === now.getMonth() &&
+      itemDate.getFullYear() === now.getFullYear()
+    );
   }
 
   editItem(element: any) {
@@ -154,13 +163,12 @@ updateExpensesOnly(): void {
 
   openDialog(): void {
     const dialogRef = this.dialog.open(ExpenseDialogComponent, {
-      width: '400px'
+      width: '400px',
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.loadData()
-
+        this.loadData();
       }
     });
   }
@@ -168,29 +176,31 @@ updateExpensesOnly(): void {
   openEditExpense(element: any): void {
     const dialogRef = this.dialog.open(ExpenseEditComponentTsComponent, {
       width: '400px',
-      data: element // Pass the selected row
+      data: element, // Pass the selected row
     });
-  
-    dialogRef.afterClosed().subscribe(result => {
+
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.loadData();
-        this.updateExpensesOnly() // Reload data after editing
+        this.updateExpensesOnly(); // Reload data after editing
       }
     });
   }
-  
-  /// Delete Expense 
+
+  /// Delete Expense
   deleteItem(element: any) {
     // Send the delete request using the correct ID
     this.expenseService.deleteExpenseData(element.id).subscribe({
       next: () => {
         // Remove the deleted item from the dataSource (UI update)
-        this.dataSource = this.dataSource.filter((item: any) => item.id !== element.id);
+        this.dataSource = this.dataSource.filter(
+          (item: any) => item.id !== element.id
+        );
         console.log('Item deleted:', element);
       },
       error: (error) => {
         console.error('Delete failed:', error);
-      }
+      },
     });
   }
   exportCsv() {
@@ -200,12 +210,10 @@ updateExpensesOnly(): void {
       item.category,
       item.description,
       item.amount,
-      item.status
+      item.status,
     ]);
 
-    const csvContent = [headers, ...rows]
-      .map(e => e.join(','))
-      .join('\n');
+    const csvContent = [headers, ...rows].map((e) => e.join(',')).join('\n');
 
     // Create a Blob and create an anchor tag to download the CSV
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -216,5 +224,4 @@ updateExpensesOnly(): void {
     link.click();
     URL.revokeObjectURL(url);
   }
-
 }

@@ -1,32 +1,60 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './pages/login/login.component';
+import { AuthGuard } from './guards/auth.guard';
 import { LayoutComponent } from './pages/layout/layout.component';
-import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { ExpensesComponent } from './pages/expenses/expenses.component';
-import { authGuard } from './Guard/authGuard';
-import { InvoicingComponent } from './invoicing/invoicing.component';
-import { ContactUsComponent } from './pages/contact-us/contact-us.component';
 
 export const routes: Routes = [
   {
-    path: '',
-    redirectTo: 'login',
-    pathMatch: 'full'
-  },
-  {
     path: 'login',
-    component: LoginComponent
+    loadComponent: () =>
+      import('./pages/login/login.component').then((m) => m.LoginComponent),
   },
   {
     path: '',
     component: LayoutComponent,
     children: [
-
-      { path: 'dashboard', component: DashboardComponent,   },
-      { path: 'expenses', component: ExpensesComponent },
-      { path: 'invoicing', component: InvoicingComponent },
-      { path: 'contactUs', component: ContactUsComponent }
-    ]
-
-  }
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./pages/dashboard/dashboard.component').then(
+            (m) => m.DashboardComponent
+          ),
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'expenses',
+        loadComponent: () =>
+          import('./pages/expenses/expenses.component').then(
+            (m) => m.ExpensesComponent
+          ),
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'financial-pie-chart',
+        loadComponent: () =>
+          import(
+            './pages/financial-pie-chart/financial-pie-chart.component'
+          ).then((m) => m.FinancialPieChartComponent),
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'contact-us',
+        loadComponent: () =>
+          import('./pages/contact-us/contact-us.component').then(
+            (m) => m.ContactUsComponent
+          ),
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'user-management',
+        loadComponent: () =>
+          import('./pages/user-management/user-management.component').then(
+            (m) => m.UserManagementComponent
+          ),
+        canActivate: [AuthGuard],
+        data: { requiresAdmin: true },
+      },
+      { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+    ],
+  },
+  { path: '**', redirectTo: '/dashboard' },
 ];
