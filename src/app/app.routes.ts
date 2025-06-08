@@ -29,14 +29,6 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
       },
       {
-        path: 'financial-pie-chart',
-        loadComponent: () =>
-          import(
-            './pages/financial-pie-chart/financial-pie-chart.component'
-          ).then((m) => m.FinancialPieChartComponent),
-        canActivate: [AuthGuard],
-      },
-      {
         path: 'contact-us',
         loadComponent: () =>
           import('./pages/contact-us/contact-us.component').then(
@@ -52,6 +44,14 @@ export const routes: Routes = [
           ),
         canActivate: [AuthGuard],
         data: { requiresAdmin: true },
+      },
+      {
+        path: 'invoicing',
+        loadComponent: () =>
+          import('./invoicing/invoicing.component').then(
+            (m) => m.InvoicingComponent
+          ),
+        canActivate: [AuthGuard],
       },
       { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
     ],

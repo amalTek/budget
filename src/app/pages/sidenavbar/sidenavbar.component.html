@@ -4,24 +4,31 @@
     <h1>MyBudget</h1>
   </div>
   <div class="sidenav">
-    <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">
+    <a
+      *ngIf="!isAdmin"
+      class="nav-link"
+      routerLink="/dashboard"
+      routerLinkActive="active"
+    >
       <i class="material-icons">dashboard</i>Dashboard
     </a>
 
-    <a class="nav-link" routerLink="/expenses" routerLinkActive="active">
+    <a
+      *ngIf="!isAdmin"
+      class="nav-link"
+      routerLink="/expenses"
+      routerLinkActive="active"
+    >
       <i class="material-icons">receipt_long</i> Expenses
     </a>
 
-    <a class="nav-link" routerLink="/invoicing" routerLinkActive="active">
-      <i class="material-icons">request_quote</i> Invoicing
-    </a>
-
     <a
+      *ngIf="!isAdmin"
       class="nav-link"
-      routerLink="/financial-pie-chart"
+      routerLink="/invoicing"
       routerLinkActive="active"
     >
-      <i class="material-icons">pie_chart</i> Financial Chart
+      <i class="material-icons">request_quote</i> Invoicing
     </a>
 
     <a

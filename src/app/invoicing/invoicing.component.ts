@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { InvoicingeditComponent } from './invoicingedit/invoicingedit.component';
 import { InvoicingDialogComponent } from './invoicing-dialog/invoicing-dialog.component';
+import { AuthService } from '../services/authService.service';
 
 @Component({
   selector: 'app-invoicing',
@@ -17,17 +18,19 @@ import { InvoicingDialogComponent } from './invoicing-dialog/invoicing-dialog.co
     MatButtonModule,
     MatIconModule,
     MatDialogModule,
-    InvoicingeditComponent,InvoicingDialogComponent
-
+    InvoicingeditComponent,
+    InvoicingDialogComponent,
   ],
   templateUrl: './invoicing.component.html',
-  styleUrls: ['./invoicing.component.css']
+  styleUrls: ['./invoicing.component.css'],
 })
 export class InvoicingComponent {
+  isController = false;
   constructor(
-    private dialog: MatDialog, 
-    private invoiceService: InvoiceService
-  ) { }
+    private dialog: MatDialog,
+    private invoiceService: InvoiceService,
+    private authService: AuthService
+  ) {}
 
   displayedColumns: string[] = [
     'corporate',
@@ -47,29 +50,40 @@ export class InvoicingComponent {
     'vatAmount',
     'totalAmount',
     'status',
-    'actions'
+    'actions',
   ];
-  
+
   dataSource: any[] = [];
 
   ngOnInit() {
+    this.isController = this.authService.hasRole('CONTROLLER');
+    if (this.isController) {
+      this.displayedColumns = this.displayedColumns.filter(
+        (col) => col !== 'actions'
+      );
+    }
     this.loadData();
   }
 
   loadData() {
     this.invoiceService.loadInvoiceData().subscribe(
-      response => {
+      (response) => {
         this.dataSource = response;
         console.log('Data loaded:', this.dataSource);
       },
-      error => {
+      (error) => {
         console.error('Error loading data:', error);
       }
     );
   }
 
   getTotalAmount(): number {
-    return this.dataSource?.reduce((acc, item) => acc + (item.totalAmount || 0), 0) || 0;
+    return (
+      this.dataSource?.reduce(
+        (acc, item) => acc + (item.totalAmount || 0),
+        0
+      ) || 0
+    );
   }
 
   getDefaultCurrency(): string {
@@ -77,43 +91,44 @@ export class InvoicingComponent {
   }
 
   openDialog(): void {
-      const dialogRef = this.dialog.open(InvoicingDialogComponent, {
-         width: '400px'
-       });
-   
-       dialogRef.afterClosed().subscribe(result => {
-         if (result) {
-           this.loadData()
-   
-         }
-       });
+    const dialogRef = this.dialog.open(InvoicingDialogComponent, {
+      width: '400px',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loadData();
+      }
+    });
   }
 
   openEditExpense(element: any): void {
     const dialogRef = this.dialog.open(InvoicingeditComponent, {
-       width: '400px',
-       data: element // Pass the selected row
-     });
-   
-     dialogRef.afterClosed().subscribe(result => {
-       if (result) {
-         this.loadData(); // Reload data after editing
-       }
-     });
+      width: '400px',
+      data: element, // Pass the selected row
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loadData(); // Reload data after editing
+      }
+    });
   }
-  
+
   // Remove the deleted item from the dataSource (UI update)
   deleteItem(element: any) {
     this.invoiceService.deleteInvoiceData(element.id).subscribe({
       next: () => {
-       
-        this.dataSource = this.dataSource.filter((item: any) => item.id !== element.id);
+        this.dataSource = this.dataSource.filter(
+          (item: any) => item.id !== element.id
+        );
         console.log('Item deleted:', element);
       },
       error: (error) => {
         console.error('Delete failed:', error);
-      }
-    });}
+      },
+    });
+  }
 
   exportCsv() {
     if (this.dataSource.length === 0) {
@@ -121,9 +136,9 @@ export class InvoicingComponent {
       return;
     }
 
-    const headers = this.displayedColumns.filter(col => col !== 'actions');
-    const rows = this.dataSource.map(item => 
-      headers.map(header => {
+    const headers = this.displayedColumns.filter((col) => col !== 'actions');
+    const rows = this.dataSource.map((item) =>
+      headers.map((header) => {
         if (header === 'invoiceDate' || header === 'dueDate') {
           return new Date(item[header]).toLocaleDateString();
         }
@@ -132,7 +147,7 @@ export class InvoicingComponent {
     );
 
     const csvContent = [headers, ...rows]
-      .map(row => row.join(','))
+      .map((row) => row.join(','))
       .join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });

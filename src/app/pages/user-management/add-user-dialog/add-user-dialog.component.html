@@ -1,0 +1,63 @@
+<h2 mat-dialog-title>Add New User</h2>
+<mat-dialog-content [formGroup]="addUserForm">
+  <mat-form-field appearance="outline">
+    <mat-label>First Name</mat-label>
+    <input matInput formControlName="firstName" required />
+    <mat-error *ngIf="addUserForm.get('firstName')?.hasError('required')"
+      >First Name is required</mat-error
+    >
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Last Name</mat-label>
+    <input matInput formControlName="lastName" required />
+    <mat-error *ngIf="addUserForm.get('lastName')?.hasError('required')"
+      >Last Name is required</mat-error
+    >
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Email</mat-label>
+    <input matInput formControlName="email" type="email" required />
+    <mat-error *ngIf="addUserForm.get('email')?.hasError('required')"
+      >Email is required</mat-error
+    >
+    <mat-error *ngIf="addUserForm.get('email')?.hasError('email')"
+      >Invalid email format</mat-error
+    >
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Password</mat-label>
+    <input matInput formControlName="password" type="password" required />
+    <mat-error *ngIf="addUserForm.get('password')?.hasError('required')"
+      >Password is required</mat-error
+    >
+    <mat-error *ngIf="addUserForm.get('password')?.hasError('minlength')"
+      >Password must be at least 6 characters</mat-error
+    >
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Role</mat-label>
+    <mat-select formControlName="role" required>
+      <mat-option *ngFor="let role of roles" [value]="role">
+        {{ role }}
+      </mat-option>
+    </mat-select>
+    <mat-error *ngIf="addUserForm.get('role')?.hasError('required')"
+      >Role is required</mat-error
+    >
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button
+    mat-flat-button
+    color="primary"
+    (click)="onSave()"
+    [disabled]="!addUserForm.valid"
+  >
+    Add User
+  </button>
+</mat-dialog-actions>

@@ -7,20 +7,37 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/authService.service';
 import { Router } from '@angular/router';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { AddUserDialogComponent } from './add-user-dialog/add-user-dialog.component';
+import { MatIconModule } from '@angular/material/icon';
+import { DeleteConfirmDialogComponent } from './delete-confirm-dialog/delete-confirm-dialog.component';
 
 @Component({
   selector: 'app-user-management',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatButtonModule, MatSelectModule],
+  imports: [
+    CommonModule,
+    MatTableModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatDialogModule,
+    MatIconModule,
+    DeleteConfirmDialogComponent,
+  ],
   template: `
     <div class="user-management-container" *ngIf="isAdmin">
-      <h2>User Management</h2>
+      <div class="header-actions">
+        <h2>User Management</h2>
+        <button mat-flat-button color="primary" (click)="openAddUserDialog()">
+          <mat-icon>person_add</mat-icon> Add User
+        </button>
+      </div>
       <table mat-table [dataSource]="users" class="mat-elevation-z8">
         <!-- Name Column -->
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>Name</th>
           <td mat-cell *matCellDef="let user">
-            {{ user.name }} {{ user.lastName }}
+            {{ user.firstName }} {{ user.lastName }}
           </td>
         </ng-container>
 
@@ -36,8 +53,8 @@ import { Router } from '@angular/router';
           <td mat-cell *matCellDef="let user">{{ user.role }}</td>
         </ng-container>
 
-        <!-- Status Column -->
-        <ng-container matColumnDef="status">
+        <!-- Account Status Column -->
+        <ng-container matColumnDef="accountStatus">
           <th mat-header-cell *matHeaderCellDef>Status</th>
           <td mat-cell *matCellDef="let user">
             <mat-select
@@ -75,6 +92,12 @@ import { Router } from '@angular/router';
       .user-management-container {
         padding: 20px;
       }
+      .header-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
       table {
         width: 100%;
       }
@@ -82,7 +105,7 @@ import { Router } from '@angular/router';
         width: 120px;
         text-align: center;
       }
-      .mat-column-status {
+      .mat-column-accountStatus {
         width: 150px;
       }
       .access-denied {
@@ -95,14 +118,21 @@ import { Router } from '@angular/router';
 })
 export class UserManagementComponent implements OnInit {
   users: any[] = [];
-  displayedColumns: string[] = ['name', 'email', 'role', 'status', 'actions'];
+  displayedColumns: string[] = [
+    'name',
+    'email',
+    'role',
+    'accountStatus',
+    'actions',
+  ];
   isAdmin: boolean = false;
 
   constructor(
     private userService: UserService,
     private authService: AuthService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -131,8 +161,8 @@ export class UserManagementComponent implements OnInit {
     });
   }
 
-  updateUserStatus(userId: number, newStatus: string) {
-    this.userService.updateUserStatus(userId, newStatus).subscribe({
+  updateUserStatus(userId: number, status: string) {
+    this.userService.updateUserStatus(userId, status).subscribe({
       next: (response) => {
         this.snackBar.open('User status updated successfully', 'Close', {
           duration: 3000,
@@ -150,22 +180,56 @@ export class UserManagementComponent implements OnInit {
   }
 
   deleteUser(userId: number) {
-    if (confirm('Are you sure you want to delete this user?')) {
-      this.userService.deleteUser(userId).subscribe({
-        next: () => {
-          this.snackBar.open('User deleted successfully', 'Close', {
-            duration: 3000,
-            panelClass: ['success-snackbar'],
-          });
-          this.loadUsers(); // Reload the users list
-        },
-        error: (error) => {
-          this.snackBar.open('Error deleting user', 'Close', {
-            duration: 3000,
-            panelClass: ['error-snackbar'],
-          });
-        },
-      });
-    }
+    const dialogRef = this.dialog.open(DeleteConfirmDialogComponent, {
+      width: '350px',
+      data: { message: 'Are you sure you want to delete this user?' },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.userService.deleteUser(userId).subscribe({
+          next: () => {
+            this.snackBar.open('User deleted successfully', 'Close', {
+              duration: 3000,
+              panelClass: ['success-snackbar'],
+            });
+            this.loadUsers(); // Reload the users list
+          },
+          error: (error) => {
+            this.snackBar.open('Error deleting user', 'Close', {
+              duration: 3000,
+              panelClass: ['error-snackbar'],
+            });
+          },
+        });
+      }
+    });
+  }
+
+  openAddUserDialog(): void {
+    const dialogRef = this.dialog.open(AddUserDialogComponent, {
+      width: '400px',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.userService.saveUser(result).subscribe({
+          next: () => {
+            this.snackBar.open('User added successfully', 'Close', {
+              duration: 3000,
+              panelClass: ['success-snackbar'],
+            });
+            this.loadUsers(); // Reload users list after adding new user
+          },
+          error: (error) => {
+            console.error('Error adding user:', error);
+            this.snackBar.open('Error adding user', 'Close', {
+              duration: 3000,
+              panelClass: ['error-snackbar'],
+            });
+          },
+        });
+      }
+    });
   }
 }

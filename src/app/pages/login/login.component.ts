@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '../../services/authService.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -53,21 +54,18 @@ export class LoginComponent implements OnInit {
         console.log('Login successful, token received');
         this.router.navigate(['/dashboard']);
       },
-      error: (err) => {
-        let errorMessage = 'Error occurred while logging in.';
-        if (
-          err.error?.error === 'Invalid credentials or account not accepted'
-        ) {
-          errorMessage =
-            'Your account is pending approval or has been refused.';
-        }
-        this.snackBar.open(`⚠️ ${errorMessage}`, 'Close', {
-          duration: 4000,
-          panelClass: ['warn-snackbar'],
-          verticalPosition: 'top',
-          horizontalPosition: 'center',
-        });
+      error: (err: HttpErrorResponse) => {
+        this.handleError(err, 'login');
       },
+    });
+  }
+
+  private showLoginError(message: string): void {
+    this.snackBar.open(`⚠️ ${message}`, 'Close', {
+      duration: 4000,
+      panelClass: ['warn-snackbar'],
+      verticalPosition: 'top',
+      horizontalPosition: 'center',
     });
   }
 
@@ -98,14 +96,8 @@ export class LoginComponent implements OnInit {
             }
           );
         },
-        error: (error) => {
-          console.error(error);
-          this.snackBar.open('⚠️ Error occurred while saving user.', 'Close', {
-            duration: 4000,
-            panelClass: ['warn-snackbar'],
-            verticalPosition: 'top',
-            horizontalPosition: 'center',
-          });
+        error: (error: HttpErrorResponse) => {
+          this.handleError(error, 'register');
         },
       });
     } else {
@@ -120,5 +112,68 @@ export class LoginComponent implements OnInit {
         }
       );
     }
+  }
+
+  private showRegisterError(message: string): void {
+    this.snackBar.open(`⚠️ ${message}`, 'Close', {
+      duration: 4000,
+      panelClass: ['warn-snackbar'],
+      verticalPosition: 'top',
+      horizontalPosition: 'center',
+    });
+  }
+
+  private handleError(
+    err: HttpErrorResponse,
+    context: 'login' | 'register'
+  ): void {
+    let errorMessage = `An unexpected error occurred during ${context}.`;
+    console.error(err);
+
+    if (err.error instanceof Blob) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const errorObj = JSON.parse(reader.result as string);
+          errorMessage = errorObj.message || errorObj.error || errorMessage;
+        } catch (e) {
+          errorMessage = (reader.result as string) || errorMessage; // Fallback to raw text if not JSON
+        }
+        if (context === 'login') {
+          this.showLoginError(errorMessage);
+        } else {
+          this.showRegisterError(errorMessage);
+        }
+      };
+      reader.readAsText(err.error);
+    } else if (typeof err.error === 'string') {
+      try {
+        const errorObj = JSON.parse(err.error);
+        errorMessage = errorObj.message || errorObj.error || errorMessage;
+      } catch (e) {
+        errorMessage = err.error; // Not a JSON string, use as is
+      }
+      if (context === 'login') {
+        this.showLoginError(errorMessage);
+      } else {
+        this.showRegisterError(errorMessage);
+      }
+    } else if (err.error && typeof err.error === 'object') {
+      errorMessage = err.error.message || err.error.error || errorMessage;
+      if (context === 'login') {
+        this.showLoginError(errorMessage);
+      } else {
+        this.showRegisterError(errorMessage);
+      }
+    } else if (err.message) {
+      errorMessage = err.message;
+      if (context === 'login') {
+        this.showLoginError(errorMessage);
+      } else {
+        this.showRegisterError(errorMessage);
+      }
+    }
+    // If it's a Blob, the FileReader onload will call showLoginError/showRegisterError
+    // Otherwise, it's already called in the else if blocks above
   }
 }

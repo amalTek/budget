@@ -6,11 +6,14 @@ import { ExpenseService } from '../../services/expense.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ExpenseDialogComponent } from './expense-dialog/expense-dialog.component';
 import { ExpenseEditComponentTsComponent } from './expense-edit.component.ts/expense-edit.component.ts.component';
+import { AuthService } from '../../services/authService.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   standalone: true,
   selector: 'app-expenses',
   imports: [
+    CommonModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
@@ -21,9 +24,11 @@ import { ExpenseEditComponentTsComponent } from './expense-edit.component.ts/exp
   styleUrls: ['./expenses.component.css'],
 })
 export class ExpensesComponent {
+  isController = false;
   constructor(
     private expenseService: ExpenseService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private authService: AuthService
   ) {}
   displayedColumns: string[] = [
     'date',
@@ -37,6 +42,14 @@ export class ExpensesComponent {
   dataSource: any[] = [];
 
   ngOnInit() {
+    this.isController = this.authService.hasRole('CONTROLLER');
+    console.log('isController (in ngOnInit):', this.isController);
+    if (this.isController) {
+      this.displayedColumns = this.displayedColumns.filter(
+        (col) => col !== 'actions'
+      );
+    }
+    console.log('displayedColumns (after filter):', this.displayedColumns);
     this.loadData();
   }
   get currentCurrency(): string {
@@ -203,25 +216,35 @@ export class ExpensesComponent {
       },
     });
   }
+
   exportCsv() {
-    const headers = ['Date', 'Category', 'Description', 'Amount', 'Status'];
-    const rows = this.dataSource.map((item: any) => [
-      item.date,
-      item.category,
-      item.description,
-      item.amount,
-      item.status,
-    ]);
+    if (this.dataSource.length === 0) {
+      console.warn('No data to export');
+      return;
+    }
 
-    const csvContent = [headers, ...rows].map((e) => e.join(',')).join('\n');
+    const headers = this.displayedColumns.filter((col) => col !== 'actions');
+    const rows = this.dataSource.map((item) =>
+      headers.map((header) => {
+        if (header === 'date') {
+          return new Date(item[header]).toLocaleDateString();
+        }
+        return item[header];
+      })
+    );
 
-    // Create a Blob and create an anchor tag to download the CSV
+    const csvContent = [headers, ...rows]
+      .map((row) => row.join(','))
+      .join('\n');
+
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
     link.setAttribute('download', 'expenses.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
     link.click();
-    URL.revokeObjectURL(url);
+    document.body.removeChild(link);
   }
 }
