@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { FormsModule } from '@angular/forms';
+import { FinancialPieChartComponent } from '../financial-pie-chart/financial-pie.component';
 
 @Component({
   standalone: true,
@@ -20,15 +21,17 @@ import { FormsModule } from '@angular/forms';
     MatInputModule,
     MatNativeDateModule,
     MatDatepickerModule,
-    FormsModule,
+    FormsModule,FinancialPieChartComponent
   ],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css'],
+  styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent {
   constructor(private financialService: FinancialService) {}
 
   currentChartData: any;
+
+ 
 
   public financialSummary: any[] = [];
   public selectedMonth: Date = new Date(); // Initialize with current date
@@ -41,7 +44,7 @@ export class DashboardComponent {
   get formattedMonth(): string {
     return this.selectedMonth.toLocaleDateString('fr-FR', {
       year: 'numeric',
-      month: 'long',
+      month: 'long'
     });
   }
 
@@ -59,27 +62,27 @@ export class DashboardComponent {
   loadData() {
     const year = this.selectedMonth.getFullYear();
     const month = this.selectedMonth.getMonth();
-
+    
     this.financialService.loadDashboardData(year, month).subscribe({
       next: (response) => {
         this.financialSummary = response;
-
-        this.currentChartData =
-          response && response.length > 0
-            ? response[0]
-            : { totalInvoicing: 0, totalExpenses: 0, currentBalance: 0 };
+        
+        this.currentChartData = response && response.length > 0 
+          ? response[0] 
+          : { totalInvoicing: 0, totalExpenses: 0, currentBalance: 0 };
       },
       error: (err) => {
         console.error('Failed to load financial data:', err);
-      },
+      }
     });
   }
   get currentCurrency(): string {
-    return 'TND'; // Or make this dynamic if you have currency selection
-  }
+  return 'TND'; // Or make this dynamic if you have currency selection
+}
 
-  formatCurrency(value: number): string {
-    if (!value && value !== 0) return `0.000 ${this.currentCurrency}`;
-    return value.toFixed(3) + ' ' + this.currentCurrency;
-  }
+formatCurrency(value: number): string {
+  if (!value && value !== 0) return `0.000 ${this.currentCurrency}`;
+  return value.toFixed(3) + ' ' + this.currentCurrency;
+
+}
 }
