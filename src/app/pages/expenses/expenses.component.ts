@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   selector: 'app-expenses',
   imports: [
-    CommonModule,
+    CommonModule, 
     MatTableModule,
     MatButtonModule,
     MatIconModule,
@@ -60,7 +60,7 @@ export class ExpensesComponent {
     return value.toFixed(3) + ' ' + this.currentCurrency;
   }
   loadData() {
-    this.expenseService.loadExpenseData().subscribe((response) => {
+   this.expenseService.loadExpenseData().subscribe((response) => {
       this.dataSource = response;
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -73,7 +73,9 @@ export class ExpensesComponent {
         }
         return item;
       });
-      this.groupTransactionsByMonth();
+      const value = this.groupTransactionsByMonth();
+      
+ this.expenseService.saveExpense(value).subscribe((response) => {console.log("mmannn",response) })
 
       console.log('  this.dataSource', this.dataSource);
     });
@@ -87,27 +89,17 @@ export class ExpensesComponent {
         ?.reduce((acc, value) => acc + (value || 0), 0) || 0;
     return this.formatCurrency(valueTotal);
   }
-
-  groupTransactionsByMonth() {
-    const tt = this.dataSource.reduce((acc, transaction) => {
-      if (transaction.status !== 'approved') return acc;
-
-      const date = new Date(transaction.date);
-      const month = date.getMonth() + 1;
-      const monthKey = `${date.getFullYear()}-${month
-        .toString()
-        .padStart(2, '0')}`;
-
-      if (!acc[monthKey]) {
-        acc[monthKey] = [];
-      }
-
-      acc[monthKey].push(transaction);
-      return acc;
-    }, {});
-    console.log('tt', tt);
-    return tt;
-  }
+groupTransactionsByMonth() {
+  return Object.entries(
+    this.dataSource
+      .filter(t => t.status === 'approved')
+      .reduce((acc, t) => {
+        const monthKey = t.date.slice(0, 7); // "YYYY-MM"
+        (acc[monthKey] ??= []).push(t);
+        return acc;
+      }, {} as Record<string, typeof this.dataSource>)
+  ).map(([month, transactions]) => ({ month, transactions }));
+}
 
   getCurrentMonthExpenses(): number {
     const now = new Date();
