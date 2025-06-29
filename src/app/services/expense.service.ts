@@ -20,6 +20,11 @@ export class ExpenseService {
   createExpenseData(expense: any): Observable<any> {
     return this.httpClient.post<any>('http://localhost:8080/api/expenses/createExpense', expense);
   }
+      saveExpense(user: any): Observable<any> {
+    return this.httpClient.post<any>(`http://localhost:8080/api/financialSummary/updateFinancialSummary`
+, user);
+  }
+
 updateCurrentMonthExpenses(totalExpenses: number): Observable<any> {
   const params = new HttpParams()
     .set('totalExpenses', totalExpenses.toString());

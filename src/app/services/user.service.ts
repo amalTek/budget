@@ -10,7 +10,6 @@ import { AuthService } from './authService.service';
 })
 export class UserService {
   private apiUrl = 'http://localhost:8080/api';
-
   constructor(
     private httpClient: HttpClient,
     private authService: AuthService
@@ -30,6 +29,7 @@ export class UserService {
   saveUser(user: any): Observable<any> {
     return this.httpClient.post<any>(`${this.apiUrl}/addUser`, user);
   }
+
 
   getAllUsers(): Observable<any[]> {
     return this.httpClient.get<any[]>(`${this.apiUrl}/users`, {

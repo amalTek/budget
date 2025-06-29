@@ -59,6 +59,11 @@ export class ExpensesComponent {
     if (!value && value !== 0) return `0.000 ${this.currentCurrency}`;
     return value.toFixed(3) + ' ' + this.currentCurrency;
   }
+ 
+ 
+ 
+ 
+// afficher les données des expenses 
   loadData() {
    this.expenseService.loadExpenseData().subscribe((response) => {
       this.dataSource = response;
@@ -73,14 +78,13 @@ export class ExpensesComponent {
         }
         return item;
       });
-      const value = this.groupTransactionsByMonth();
       
- this.expenseService.saveExpense(value).subscribe((response) => {console.log("mmannn",response) })
 
-      console.log('  this.dataSource', this.dataSource);
     });
   }
 
+
+  // calculer las somme de status approved 
   getTotalAmount(): string {
     const valueTotal =
       this.dataSource
@@ -89,83 +93,29 @@ export class ExpensesComponent {
         ?.reduce((acc, value) => acc + (value || 0), 0) || 0;
     return this.formatCurrency(valueTotal);
   }
+  
+  
+  
+  //// calculer la somme des expenses en cas de status approved and envoyer un objet avec meme month && year  totalexpense 
 groupTransactionsByMonth() {
   return Object.entries(
     this.dataSource
       .filter(t => t.status === 'approved')
       .reduce((acc, t) => {
         const monthKey = t.date.slice(0, 7); // "YYYY-MM"
-        (acc[monthKey] ??= []).push(t);
+        // Initialize if not exists, then add to the total amount
+        acc[monthKey] = (acc[monthKey] || 0) + t.amount;
         return acc;
-      }, {} as Record<string, typeof this.dataSource>)
-  ).map(([month, transactions]) => ({ month, transactions }));
+      }, {} as Record<string, number>)
+  ).map(([month, totalAmount]) => ({ 
+    month, 
+    totalAmount 
+  }));
 }
 
-  getCurrentMonthExpenses(): number {
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
 
-    return (
-      this.dataSource
-        ?.filter((item) => {
-          const itemDate = new Date(item.date); // assuming you have a date field
-          return (
-            item.status === 'approved' &&
-            itemDate.getMonth() === currentMonth &&
-            itemDate.getFullYear() === currentYear
-          );
-        })
-        ?.map((item) => item.amount)
-        ?.reduce((acc, value) => acc + (value || 0), 0) || 0
-    );
-  }
 
-  updateExpensesOnly(): void {
-    const totalExpenses = this.calculateCurrentMonthExpenses();
-    let currentMonthSummary: any = {
-      totalInvoicing: 0,
-      totalExpenses: 0,
-      currentBalance: 0,
-      createdAt: new Date(),
-    };
-    this.expenseService.updateCurrentMonthExpenses(totalExpenses).subscribe({
-      next: (updatedSummary) => {
-        currentMonthSummary = updatedSummary;
-        // Show success notification
-      },
-      error: (err) => {
-        console.error(err);
-      },
-    });
-  }
-
-  private calculateCurrentMonthExpenses(): number {
-    // Your expense calculation logic here
-    // Example:
-    return (
-      this.dataSource
-        ?.filter(
-          (item) => item.status === 'approved' && this.isCurrentMonth(item.date)
-        )
-        ?.reduce((sum, item) => sum + (item.amount || 0), 0) || 0
-    );
-  }
-
-  private isCurrentMonth(date: Date | string): boolean {
-    const now = new Date();
-    const itemDate = new Date(date);
-    return (
-      itemDate.getMonth() === now.getMonth() &&
-      itemDate.getFullYear() === now.getFullYear()
-    );
-  }
-
-  editItem(element: any) {
-    console.log('Edit:', element);
-    // You can add logic here to open a dialog or inline form for editing
-  }
-
+// ouvrir popup ajouter 
   openDialog(): void {
     const dialogRef = this.dialog.open(ExpenseDialogComponent, {
       width: '400px',
@@ -174,9 +124,13 @@ groupTransactionsByMonth() {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.loadData();
+       this.calculerExpense();
+
       }
     });
   }
+
+  // ouvrir popup modifier  
 
   openEditExpense(element: any): void {
     const dialogRef = this.dialog.open(ExpenseEditComponentTsComponent, {
@@ -187,9 +141,17 @@ groupTransactionsByMonth() {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.loadData();
-        this.updateExpensesOnly(); // Reload data after editing
+        this.calculerExpense();
+   
       }
     });
+  }
+
+
+  /// calculer la somme des expenes 
+  calculerExpense(){
+     const value = this.groupTransactionsByMonth();
+    this.expenseService.saveExpense(value).subscribe((response) => {console.log("mmannn",response) })
   }
 
   /// Delete Expense
@@ -209,6 +171,7 @@ groupTransactionsByMonth() {
     });
   }
 
+  // export csv
   exportCsv() {
     if (this.dataSource.length === 0) {
       console.warn('No data to export');
