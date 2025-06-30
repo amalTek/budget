@@ -33,6 +33,7 @@ export class FinancialPieChartComponent implements OnChanges {
     }
 
     const ctx = this.pieChartRef.nativeElement.getContext('2d');
+    console.log("rrrrr",this.financialData)
     
     this.chart = new Chart(ctx, {
       type: 'pie',

@@ -30,6 +30,7 @@ export class DashboardComponent {
   constructor(private financialService: FinancialService) {}
 
   currentChartData: any;
+  public titlePieChart:any;
 
  
 
@@ -70,6 +71,9 @@ export class DashboardComponent {
         this.currentChartData = response && response.length > 0 
           ? response[0] 
           : { totalInvoicing: 0, totalExpenses: 0, currentBalance: 0 };
+          const datatitlePieChart =new Date( this.currentChartData?.createdAt);
+this.titlePieChart = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(datatitlePieChart);
+
       },
       error: (err) => {
         console.error('Failed to load financial data:', err);

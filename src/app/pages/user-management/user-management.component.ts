@@ -22,7 +22,6 @@ import { DeleteConfirmDialogComponent } from './delete-confirm-dialog/delete-con
     MatSelectModule,
     MatDialogModule,
     MatIconModule,
-    DeleteConfirmDialogComponent,
   ],
   template: `
     <div class="user-management-container" *ngIf="isAdmin">
