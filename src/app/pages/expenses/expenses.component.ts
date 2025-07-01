@@ -8,7 +8,6 @@ import { ExpenseDialogComponent } from './expense-dialog/expense-dialog.componen
 import { ExpenseEditComponentTsComponent } from './expense-edit.component.ts/expense-edit.component.ts.component';
 import { AuthService } from '../../services/authService.service';
 import { CommonModule } from '@angular/common';
-import { filter, map, Observable, switchMap, tap } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -41,8 +40,6 @@ export class ExpensesComponent {
   ];
 
   dataSource: any[] = [];
-  dataSourceTotal: any[] = [];
-
 
   ngOnInit() {
     this.isController = this.authService.hasRole('CONTROLLER');
@@ -53,9 +50,7 @@ export class ExpensesComponent {
       );
     }
     console.log('displayedColumns (after filter):', this.displayedColumns);
-  this.loadData().subscribe({
-    error: (err) => console.error('Initial load failed:', err)
-  });
+    this.loadData();
   }
   get currentCurrency(): string {
     return 'TND'; // Or make this dynamic if you have currency selection
@@ -69,24 +64,24 @@ export class ExpensesComponent {
  
  
 // afficher les données des expenses 
-loadData(): Observable<any[]> {
-  return this.expenseService.loadExpenseData().pipe(
-    tap((response: any[]) => {
-      this.dataSourceTotal = response;
-      
+  loadData() {
+   this.expenseService.loadExpenseData().subscribe((response) => {
+      this.dataSource = response;
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      this.dataSource = response.map(item => {
+      // Update statuses if the date is before the curreb=nt date
+      this.dataSource = this.dataSource?.map((item) => {
         const itemDate = new Date(item.date);
-        return { 
-          ...item, 
-          status: itemDate < today ? 'approved' : item.status 
-        };
+        if (itemDate < today) {
+          return { ...item, status: 'approved' };
+        }
+        return item;
       });
-    })
-  );
-}
+      
+
+    });
+  }
 
 
   // calculer las somme de status approved 
@@ -104,7 +99,8 @@ loadData(): Observable<any[]> {
   //// calculer la somme des expenses en cas de status approved and envoyer un objet avec meme month && year  totalexpense 
 groupTransactionsByMonth() {
   return Object.entries(
-    this.dataSourceTotal?.filter(t => t.status === 'approved')
+    this.dataSource
+      .filter(t => t.status === 'approved')
       .reduce((acc, t) => {
         const monthKey = t.date.slice(0, 7); // "YYYY-MM"
         // Initialize if not exists, then add to the total amount
@@ -125,36 +121,37 @@ groupTransactionsByMonth() {
       width: '400px',
     });
 
-   
-  dialogRef.afterClosed().pipe(
-    filter(result => !!result), // Only proceed if result exists
-    switchMap(() => this.loadData()) // Refresh data
-  ).subscribe({
-    next: () => this.calculerExpense(),
-    error: (err) => console.error('Error reloading data:', err)
-  });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loadData();
+       this.calculerExpense();
+
+      }
+    });
   }
 
   // ouvrir popup modifier  
 
- openEditExpense(element: any): void {
-  const dialogRef = this.dialog.open(ExpenseEditComponentTsComponent, {
-    width: '400px',
-    data: element,
-  });
+  openEditExpense(element: any): void {
+    const dialogRef = this.dialog.open(ExpenseEditComponentTsComponent, {
+      width: '400px',
+      data: element, // Pass the selected row
+    });
 
-  dialogRef.afterClosed().pipe(
-    filter(result => !!result), // Only proceed if result exists
-    switchMap(() => this.loadData()) // Refresh data
-  ).subscribe({
-    next: () => this.calculerExpense(),
-    error: (err) => console.error('Error reloading data:', err)
-  });
-}
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loadData();
+        this.calculerExpense();
+   
+      }
+    });
+  }
+
+
   /// calculer la somme des expenes 
   calculerExpense(){
      const value = this.groupTransactionsByMonth();
-    this.expenseService.saveExpense(value).subscribe((response) => { })
+    this.expenseService.saveExpense(value).subscribe((response) => {console.log("mmannn",response) })
   }
 
   /// Delete Expense
@@ -205,46 +202,4 @@ groupTransactionsByMonth() {
     link.click();
     document.body.removeChild(link);
   }
-  
-  updateExpensesOnly(): void {
-    const totalExpenses = this.calculateCurrentMonthExpenses();
-    let currentMonthSummary: any = {
-      totalInvoicing: 0,
-      totalExpenses: 0,
-      currentBalance: 0,
-      createdAt: new Date(),
-    };
-    this.expenseService.updateCurrentMonthExpenses(totalExpenses).subscribe({
-      next: (updatedSummary) => {
-        currentMonthSummary = updatedSummary;
-        // Show success notification
-      },
-      error: (err) => {
-        console.error(err);
-      },
-    });
-  }
-  private calculateCurrentMonthExpenses(): number {
-    // Your expense calculation logic here
-    // Example:
-    return (
-      this.dataSource
-        ?.filter(
-          (item) => item.status === 'approved' && this.isCurrentMonth(item.date)
-        )
-        ?.reduce((sum, item) => sum + (item.amount || 0), 0) || 0
-    );
-  }
- private isCurrentMonth(date: Date | string): boolean {
-    const now = new Date();
-    const itemDate = new Date(date);
-    return (
-      itemDate.getMonth() === now.getMonth() &&
-      itemDate.getFullYear() === now.getFullYear()
-    );
-  }
-
-
-
-  
 }
