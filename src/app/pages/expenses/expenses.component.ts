@@ -96,22 +96,7 @@ export class ExpensesComponent {
   
   
   
-  //// calculer la somme des expenses en cas de status approved and envoyer un objet avec meme month && year  totalexpense 
-groupTransactionsByMonth() {
-  return Object.entries(
-    this.dataSource
-      .filter(t => t.status === 'approved')
-      .reduce((acc, t) => {
-        const monthKey = t.date.slice(0, 7); // "YYYY-MM"
-        // Initialize if not exists, then add to the total amount
-        acc[monthKey] = (acc[monthKey] || 0) + t.amount;
-        return acc;
-      }, {} as Record<string, number>)
-  ).map(([month, totalAmount]) => ({ 
-    month, 
-    totalAmount 
-  }));
-}
+
 
 
 
@@ -124,7 +109,6 @@ groupTransactionsByMonth() {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.loadData();
-       this.calculerExpense();
 
       }
     });
@@ -141,18 +125,14 @@ groupTransactionsByMonth() {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.loadData();
-        this.calculerExpense();
    
       }
     });
   }
 
 
-  /// calculer la somme des expenes 
-  calculerExpense(){
-     const value = this.groupTransactionsByMonth();
-    this.expenseService.saveExpense(value).subscribe((response) => {console.log("mmannn",response) })
-  }
+
+
 
   /// Delete Expense
   deleteItem(element: any) {

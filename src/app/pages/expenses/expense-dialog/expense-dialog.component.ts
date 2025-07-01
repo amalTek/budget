@@ -26,14 +26,15 @@ import { ExpenseService } from '../../../services/expense.service';
 })
 
 export class ExpenseDialogComponent {
+  public formData:any = {};
   constructor(
     private expenseService: ExpenseService,private dialogRef: MatDialogRef<ExpenseDialogComponent>
   ) {}
   onSubmit(form: NgForm): void {
 
-      const formData = form.value;
+      this.formData = form.value;
   
-      this.expenseService.createExpenseData(formData).subscribe({
+      this.expenseService.createExpenseData(this.formData).subscribe({
         next: (response) => {
           console.log('Expense created:', response);
           form.resetForm();
@@ -44,6 +45,26 @@ export class ExpenseDialogComponent {
         }
       });
    
+  }
+
+    calculerExpense() {
+    const value = this.groupTransactionsByMonth();
+    this.expenseService.saveExpense(value).subscribe((response) => { })
+  }
+  groupTransactionsByMonth() {
+    const dataTobeSaved = [this.formData]
+    return Object.entries(
+      dataTobeSaved?.filter(t => t.status === 'approved')
+        .reduce((acc, t) => {
+          const monthKey = t.date.slice(0, 7); // "YYYY-MM"
+          // Initialize if not exists, then add to the total amount
+          acc[monthKey] = (acc[monthKey] || 0) + t.amount;
+          return acc;
+        }, {} as Record<string, number>)
+    ).map(([month, totalAmount]) => ({
+      month,
+      totalAmount
+    }));
   }
   
   

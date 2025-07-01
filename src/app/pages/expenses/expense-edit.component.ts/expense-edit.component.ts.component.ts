@@ -21,23 +21,23 @@ import { MatButtonModule } from '@angular/material/button';
     MatDatepickerModule,
     MatNativeDateModule,
     MatDialogModule,
-    MatButtonModule,MatIconModule
+    MatButtonModule, MatIconModule
   ],
   templateUrl: './expense-edit.component.ts.component.html',
   styleUrl: './expense-edit.component.ts.component.css'
 })
 export class ExpenseEditComponentTsComponent {
+  public formData: any = {};
   constructor(
     private expenseService: ExpenseService,
     private dialogRef: MatDialogRef<ExpenseEditComponentTsComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  ) { }
 
   ngOnInit() {
     if (this.data) {
       this.expense = { ...this.data }; // initialize form model
     }
-    console.log("this.expense",this.expense)
   }
 
   expense = {
@@ -50,12 +50,13 @@ export class ExpenseEditComponentTsComponent {
 
   onSubmit(form: NgForm): void {
     if (form.valid) {
-      const formData = { ...form.value, id: this.data?.id }; // include ID for update
+      this.formData = { ...form.value, id: this.data?.id }; // include ID for update
+
 
       // Call update instead of create
-      this.expenseService.updateExpenseData(formData).subscribe({
+      this.expenseService.updateExpenseData(this.formData).subscribe({
         next: (response) => {
-          
+          this.calculerExpense();
           form.resetForm();
           this.dialogRef.close(response);
         },
@@ -65,6 +66,26 @@ export class ExpenseEditComponentTsComponent {
       });
     }
   }
+  calculerExpense() {
+    const value = this.groupTransactionsByMonth();
+    this.expenseService.saveExpense(value).subscribe((response) => { console.log("mmannn", response) })
+  }
+  groupTransactionsByMonth() {
+    const dataTobeSaved = [this.formData]
+    return Object.entries(
+      dataTobeSaved?.filter(t => t.status === 'approved')
+        .reduce((acc, t) => {
+          const monthKey = t.date.slice(0, 7); // "YYYY-MM"
+          // Initialize if not exists, then add to the total amount
+          acc[monthKey] = (acc[monthKey] || 0) + t.amount;
+          return acc;
+        }, {} as Record<string, number>)
+    ).map(([month, totalAmount]) => ({
+      month,
+      totalAmount
+    }));
+  }
+
 
 
 
