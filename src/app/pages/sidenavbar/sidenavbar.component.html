@@ -40,22 +40,24 @@
       <i class="material-icons">people</i> User Management
     </a>
 
-    <div class="nav-item">
-      <a routerLink="/contact-us" routerLinkActive="active" class="nav-link">
-        <i class="fas fa-envelope"></i>
-        <span>Contact Us</span>
-      </a>
-    </div>
+  <a
+  class="nav-link"
+  routerLink="/contact-us"
+  routerLinkActive="active"
+>
+  <i class="material-icons">mail_outline</i> Contact Us
+</a>
 
-    <div class="nav-item">
-      <a
-        (click)="logout()"
-        class="nav-link logout-link"
-        style="cursor: pointer"
-      >
-        <i class="fas fa-sign-out-alt"></i>
-        <span>Logout</span>
-      </a>
-    </div>
+ <div class="nav-item">
+  <a
+    (click)="logout()"
+    class="nav-link logout-link"
+    style="cursor: pointer"
+  >
+    <i class="material-icons">logout</i>
+    <span style="margin-left: 8px;">Logout</span>
+  </a>
+</div>
+
   </div>
 </div>

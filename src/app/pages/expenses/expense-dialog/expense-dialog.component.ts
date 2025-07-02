@@ -19,35 +19,36 @@ import { ExpenseService } from '../../../services/expense.service';
     MatDatepickerModule,
     MatNativeDateModule,
     MatDialogModule,
-    MatButtonModule,MatIconModule
+    MatButtonModule, MatIconModule
   ],
   templateUrl: './expense-dialog.component.html',
   styleUrl: './expense-dialog.component.css'
 })
 
 export class ExpenseDialogComponent {
-  public formData:any = {};
+  public formData: any = {};
   constructor(
-    private expenseService: ExpenseService,private dialogRef: MatDialogRef<ExpenseDialogComponent>
-  ) {}
+    private expenseService: ExpenseService, private dialogRef: MatDialogRef<ExpenseDialogComponent>
+  ) { }
   onSubmit(form: NgForm): void {
 
-      this.formData = form.value;
-  
-      this.expenseService.createExpenseData(this.formData).subscribe({
-        next: (response) => {
-          console.log('Expense created:', response);
-          form.resetForm();
-          this.dialogRef.close(response); // ✅ Close the dialog and optionally pass data
-        },
-        error: (err) => {
-          console.error('Failed to create expense:', err);
-        }
-      });
-   
+    this.formData = form.value;
+
+    this.expenseService.createExpenseData(this.formData).subscribe({
+      next: (response) => {
+        this.calculerExpense();
+        console.log('Expense created:', response);
+        form.resetForm();
+        this.dialogRef.close(response); // ✅ Close the dialog and optionally pass data
+      },
+      error: (err) => {
+        console.error('Failed to create expense:', err);
+      }
+    });
+
   }
 
-    calculerExpense() {
+  calculerExpense() {
     const value = this.groupTransactionsByMonth();
     this.expenseService.saveExpense(value).subscribe((response) => { })
   }
@@ -56,7 +57,15 @@ export class ExpenseDialogComponent {
     return Object.entries(
       dataTobeSaved?.filter(t => t.status === 'approved')
         .reduce((acc, t) => {
-          const monthKey = t.date.slice(0, 7); // "YYYY-MM"
+          const date = new Date((t.date).toString());
+
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+          const day = String(date.getDate()).padStart(2, "0");
+
+          const formatted = `${year}-${month}-${day}`;
+          console.log("date", t.date)
+          const monthKey = formatted?.slice(0, 7); // "YYYY-MM"
           // Initialize if not exists, then add to the total amount
           acc[monthKey] = (acc[monthKey] || 0) + t.amount;
           return acc;
@@ -66,6 +75,6 @@ export class ExpenseDialogComponent {
       totalAmount
     }));
   }
-  
-  
+
+
 }

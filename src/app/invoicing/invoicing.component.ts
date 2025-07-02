@@ -92,7 +92,7 @@ export class InvoicingComponent {
 
   openDialog(): void {
     const dialogRef = this.dialog.open(InvoicingDialogComponent, {
-      width: '400px',
+      width: '1100px',
     });
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -104,7 +104,7 @@ export class InvoicingComponent {
 
   openEditExpense(element: any): void {
     const dialogRef = this.dialog.open(InvoicingeditComponent, {
-      width: '400px',
+      width: '1100px',
       data: element, // Pass the selected row
     });
 
